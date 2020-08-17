@@ -9,6 +9,7 @@ require (
 	github.com/jinzhu/gorm v1.9.11
 	github.com/joho/godotenv v1.3.0
 	github.com/magiconair/properties v1.8.1
+	github.com/mitchellh/cli v1.1.1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/sirupsen/logrus v1.4.2
