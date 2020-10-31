@@ -95,6 +95,9 @@ tasks:
   mod-up:
     cmds:
       - go mod tidy -v
+  get:
+    cmds:
+      - task: mod-up
     
   ## docker
   dkcom-up:
