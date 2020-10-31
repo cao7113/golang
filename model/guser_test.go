@@ -3,27 +3,27 @@ package model
 import (
 	"testing"
 
-	"github.com/cao7113/hellogolang/config"
+	"github.com/cao7113/hellogolang/tests"
 
-	"github.com/cao7113/hellogolang/testing"
+	"github.com/cao7113/hellogolang/config"
 
 	"github.com/magiconair/properties/assert"
 )
 
 // http://gorm.io/zh_CN/docs/transactions.html
 func TestTrans(t *testing.T) {
-	testing.TruncateTable(Guser{}.TableName())
+	tests.TruncateTable(Guser{}.TableName())
 	err := doInTranc("a@b.c")
 	assert.Equal(t, err.Error(), "Error 1062: Duplicate entry 'a@b.c' for key 'idx_email'")
 	// count should 0
-	n := testing.RecordCount(&Guser{})
+	n := tests.RecordCount(&Guser{})
 	assert.Equal(t, 0, n)
 
 	// case2
-	testing.TruncateTable(Guser{}.TableName())
+	tests.TruncateTable(Guser{}.TableName())
 	err = doInTranc("a1@b.c")
 	assert.Equal(t, err, nil)
-	assert.Equal(t, 2, testing.RecordCount(&Guser{}))
+	assert.Equal(t, 2, tests.RecordCount(&Guser{}))
 }
 
 func doInTranc(email string) error {

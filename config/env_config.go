@@ -58,7 +58,7 @@ func init() {
 	}
 }
 
-// IsTest in testing mode
+// IsTest in tests mode
 func IsTest() bool {
 	return AppEnv == "test"
 }

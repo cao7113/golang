@@ -28,7 +28,7 @@ func (d DetailError) Error() string {
 // AKindError a kind error
 func AKindError() error {
 	err := &KindError{
-		Kind:   "testing",
+		Kind:   "tests",
 		Reason: "mock error",
 	}
 	return err
@@ -37,7 +37,7 @@ func AKindError() error {
 func ADetailError() error {
 	err := &DetailError{
 		KindError: KindError{
-			Kind:   "testing",
+			Kind:   "tests",
 			Reason: "mock detailed error",
 		},
 		Detail: "detail error type using nesting type",

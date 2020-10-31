@@ -113,7 +113,7 @@ tasks:
       - docker run --rm hello-golang-try
   dk-build-test:
     cmds:
-      - docker build -t hello-golang-test -f Dockerfile.testing .
+      - docker build -t hello-golang-test -f Dockerfile.tests .
   dk-test:
     cmds:
       - docker-compose up -d db
