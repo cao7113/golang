@@ -1,0 +1,30 @@
+# https://taskfile.dev
+version: '2'
+tasks:
+  gen:
+    desc: gen hello pb.go file
+    cmds:
+      - protoc --go_out=plugins=grpc:. hello/*.proto
+  run:
+    desc: start grpc server
+    cmds:
+      - go run -v server/cmd/main.go
+  try:
+    desc: try it
+    cmds:
+      - |
+        grpcurl -plaintext -proto hello/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq
+          {
+          "name": "geek"
+          }
+        EOM
+  error:
+   desc: try with error
+   cmds:
+     - |
+       grpcurl -plaintext -proto hello/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq
+         {
+         "name": "geek",
+         "error": "error"
+         }
+       EOM

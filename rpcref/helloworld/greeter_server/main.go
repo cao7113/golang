@@ -28,7 +28,7 @@ import (
 	"net"
 
 	//pb "google.golang.org/grpc/examples/helloworld/helloworld"
-	pb "github.com/cao7113/hellogolang/grpc/helloworld/helloworld"
+	pb "github.com/cao7113/hellogolang/rpcref/helloworld/helloworld"
 	"google.golang.org/grpc"
 )
 

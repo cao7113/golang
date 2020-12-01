@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/golang/mock v1.2.0
-	github.com/golang/protobuf v1.3.1
+	github.com/golang/protobuf v1.4.1
 	github.com/jinzhu/gorm v1.9.11
 	github.com/joho/godotenv v1.3.0
 	github.com/magiconair/properties v1.8.1
@@ -19,6 +19,7 @@ require (
 	github.com/spf13/viper v1.5.0
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/sys v0.0.0-20200124204421-9fbb57f87de9 // indirect
-	google.golang.org/grpc v1.21.0
+	google.golang.org/grpc v1.27.0
+	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v2 v2.2.7 // indirect
 )
