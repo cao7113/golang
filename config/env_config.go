@@ -21,8 +21,9 @@ var Config EnvConfig
 
 // EnvConfig thanks to https://github.com/caarlos0/env
 type EnvConfig struct {
-	AppEnv  string
-	Verbose bool `env:"VERBOSE"`
+	AppEnv      string
+	Verbose     bool   `env:"VERBOSE"`
+	ServiceName string `env:"SERVICE_NAME" envDefault:"hi-go"`
 
 	// Settings
 	DbURL string `env:"DATABASE_URL,required"`

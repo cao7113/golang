@@ -4,6 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/cao7113/hellogolang/config"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	//grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc"
 	"net"
 
 	"github.com/cao7113/hellogolang/rpc/hello"
@@ -24,13 +29,49 @@ func StartRPCServer() {
 		logrus.Fatalf("failed to listen: %v", err)
 	}
 
-	s := grpc.NewServer()
+	var opts []grpc.ServerOption
+	opts = setupMiddlewares(opts)
+	s := grpc.NewServer(opts...)
 	hello.RegisterGreeterServer(s, &HelloServer{})
 
 	logrus.Infof("running grpc server at %s", address)
 	if err := s.Serve(lis); err != nil {
 		logrus.Fatalf("failed to serve: %v", err)
 	}
+}
+
+var panicFunc = func(ctx context.Context, p interface{}) (err error) {
+	wrappedError := fmt.Errorf("panic occurs %v", p)
+
+	//txn := newrelic.FromContext(ctx)
+	//if txn != nil {
+	//	txn.NoticeError(wrappedError)
+	//}
+
+	logrus.Error(wrappedError)
+
+	return status.Error(codes.Internal, "Internal Error")
+}
+
+func setupMiddlewares(opts []grpc.ServerOption) []grpc.ServerOption {
+	var streamInterceptors []grpc.StreamServerInterceptor
+	var unaryInterceptors []grpc.UnaryServerInterceptor
+
+	streamInterceptors = append(streamInterceptors,
+		//grpc_recovery.StreamServerInterceptor(grpc_recovery.WithRecoveryHandlerContext(panicFunc)),
+		grpc_ctxtags.StreamServerInterceptor(),
+		grpctrace.StreamServerInterceptor(grpctrace.WithServiceName(config.Config.ServiceName)),
+	)
+	unaryInterceptors = append(unaryInterceptors,
+		//grpc_recovery.UnaryServerInterceptor(grpc_recovery.WithRecoveryHandlerContext(panicFunc)),
+		grpc_ctxtags.UnaryServerInterceptor(),
+		grpctrace.UnaryServerInterceptor(grpctrace.WithServiceName(config.Config.ServiceName)),
+	)
+
+	opts = append(opts, grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(streamInterceptors...)))
+	opts = append(opts, grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(unaryInterceptors...)))
+
+	return opts
 }
 
 type HelloServer struct{}
