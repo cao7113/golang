@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 
-	"github.com/cao7113/hellogolang/rpc/hello"
+	"github.com/cao7113/hellogolang/rpc/hellopb"
 	"github.com/cao7113/hellogolang/rpc/server"
 )
 
@@ -28,8 +28,8 @@ func (s *ClientTestSuite) TestDetailError() {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	c := hello.NewGreeterClient(conn)
-	req := &hello.HelloRequest{
+	c := hellopb.NewGreeterClient(conn)
+	req := &hellopb.HelloRequest{
 		Name:  "try",
 		Error: "error",
 	}
@@ -39,7 +39,7 @@ func (s *ClientTestSuite) TestDetailError() {
 	se := status.Convert(err)
 	for _, d := range se.Details() {
 		switch info := d.(type) {
-		case *hello.Error:
+		case *hellopb.Error:
 			logrus.Infof("hit mock error: %+v", info)
 		default:
 			logrus.Fatalf("Unexpected type: %s", info)

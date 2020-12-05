@@ -28,3 +28,27 @@ tasks:
          "error": "error"
          }
        EOM
+
+  dd:
+    desc: try request datadog
+    cmds:
+      - |
+        for i in {1..1000}; do echo $i; grpcurl -plaintext -proto hello/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq
+          {
+          "name": "geek"
+          }
+        EOM
+        done
+
+  dde:
+    desc: try request datadog
+    cmds:
+      - |
+        for i in {1..50}; do echo $i; grpcurl -plaintext -proto hello/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq
+        {
+          "name": "geek",
+          "error": "error"
+        }
+        EOM
+        sleep 0.5
+        done
