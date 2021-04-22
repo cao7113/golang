@@ -22,14 +22,14 @@ tasks:
   install-db-mig:
     desc: install migrations
     cmds:
-      - which migrate || brew install hello-golang-migrate
+      - which migrate || brew install golang-migrate
       - migrate -version
 
   # gRPC
   install-bloomrpc:
     desc: install GUI client for gRPC
     cmds:
-      - brew cask install bloomrpc
+      - brew install bloomrpc
 
   install-grpc:
     cmds:

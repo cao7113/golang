@@ -11,7 +11,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
 	github.com/jinzhu/gorm v1.9.11
 	github.com/joho/godotenv v1.3.0
-	github.com/labstack/echo/v4 v4.1.17 // indirect
+	github.com/labstack/echo/v4 v4.1.17
 	github.com/magiconair/properties v1.8.1
 	github.com/mitchellh/cli v1.1.1
 	github.com/mitchellh/go-homedir v1.1.0
