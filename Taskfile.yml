@@ -1,5 +1,5 @@
 # https://taskfile.dev
-version: '2'
+version: '3'
 
 vars:
   GREETING: Hello, Golang!
@@ -10,6 +10,9 @@ vars:
   MYSQL_CLI_OPTS: "-u{{.DB_USER}} "
   MIG_PATH: datasource/migrate
   GOMODNAME: "github.com/cao7113/hello-golang"
+
+includes:
+  os: ./Taskfile_{{OS}}.yml
 
 tasks:
   hello:
