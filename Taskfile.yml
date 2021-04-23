@@ -6,9 +6,11 @@ vars:
   DB_USER: root
   DB_PASSWORD: 
   DB_NAME: golang_test
-  DB_URL: mysql://{{.DB_USER}}:{{.DB_PASSWORD}}@tcp/{{.DB_NAME}}?parseTime=true
+  #DB_URL: mysql://{{.DB_USER}}:{{.DB_PASSWORD}}@tcp/{{.DB_NAME}}?parseTime=true
+  DB_URL: mysql://root:@tcp/golang_test?parseTime=true
   MYSQL_CLI_OPTS: "-u{{.DB_USER}} "
-  MIG_PATH: datasource/migrate
+  #MIG_PATH: datasource/migrate
+  MIG_PATH: migrations
   GOMODNAME: "github.com/cao7113/hello-golang"
 
 includes:
@@ -140,12 +142,14 @@ tasks:
   db-up:
     desc: migrate up
     cmds:
-      - migrate -database $DB_URL -path {{.MIG_PATH}} up
+      #- migrate -database $DB_URL -path {{.MIG_PATH}} up
+      - migrate -database mysql://root:@tcp/golang_test?parseTime=true -path {{.MIG_PATH}} up
   db-down:
     desc: migrate down
     cmds:
       - migrate -database $DB_URL -path {{.MIG_PATH}} down
-  db-reset:
+  db-reup:
+    desc: re-setup db
     cmds:
       # call tasks serially other than concurrently
       - task: db-drop
