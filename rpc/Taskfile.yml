@@ -13,7 +13,7 @@ tasks:
     desc: try it
     cmds:
       - |
-        grpcurl -plaintext -proto hello/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq
+        grpcurl -plaintext -proto hellopb/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq
           {
           "name": "geek"
           }
@@ -22,7 +22,7 @@ tasks:
    desc: try with error
    cmds:
      - |
-       grpcurl -plaintext -proto hello/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq
+       grpcurl -plaintext -proto hellopb/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq
          {
          "name": "geek",
          "error": "error"
