@@ -77,7 +77,7 @@ func (m *Account) GetInsertedAt() *timestamp.Timestamp {
 }
 
 func init() {
-	proto.RegisterType((*Account)(nil), "pb.account.Account")
+	proto.RegisterType((*Account)(nil), "protos.account.Account")
 }
 
 func init() { proto.RegisterFile("account/account.proto", fileDescriptor_d66906c5773c9d08) }

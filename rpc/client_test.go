@@ -10,11 +10,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 
-	"github.com/cao7113/hellogolang/rpc/pb"
+	"github.com/cao7113/hellogolang/rpc/protos"
 	"github.com/cao7113/hellogolang/rpc/server"
 )
 
-//go:generate protoc --go_out=plugins=grpc:. pb/*.proto
+//go:generate protoc --go_out=plugins=grpc:. protos/*.proto
 
 func (s *ClientTestSuite) TestDetailError() {
 	conn, err := grpc.Dial(*server.ConnAddress, grpc.WithInsecure())
@@ -47,7 +47,7 @@ func (s *ClientTestSuite) TestDetailError() {
 			logrus.Fatalf("Unexpected type: %s", info)
 		}
 	}
-	logrus.Errorf("pb error: %+v", err)
+	logrus.Errorf("protos error: %+v", err)
 }
 
 type ClientTestSuite struct {

@@ -10,7 +10,7 @@ import (
 	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc"
 	"net"
 
-	"github.com/cao7113/hellogolang/rpc/pb"
+	"github.com/cao7113/hellogolang/rpc/protos"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

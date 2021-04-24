@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	c := cli.NewCLI("hc-pb", "0.1.0")
+	c := cli.NewCLI("hc-protos", "0.1.0")
 	c.Args = os.Args[1:]
 	c.Commands = map[string]cli.CommandFactory{
 		"golang": func() (cli.Command, error) {

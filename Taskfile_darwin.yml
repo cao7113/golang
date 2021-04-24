@@ -32,12 +32,12 @@ tasks:
       - brew install golangci-lint
       - golangci-lint --version
 
-  # gRPC
+  # gRPC https://developers.google.com/protocol-buffers/docs/reference/go-generated
   install-grpc:
     status:
       - which protoc-gen-go > /dev/null
     cmds:
-      # protoc, pb compiler and plugins
+      # protoc, protos compiler and plugins
       - brew install protobuf
       - brew install protoc-gen-go
       # try use https://docs.buf.build/ instead prototool

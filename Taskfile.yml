@@ -9,7 +9,7 @@ vars:
   MYSQL_CLI_OPTS: "-u{{.DB_USER}} "
   #MIG_PATH: datasource/migrate
   MIG_PATH: migrations
-  GOMODNAME: "github.com/cao7113/pb-golang"
+  GOMODNAME: "github.com/cao7113/protos-golang"
 
 includes:
   os: ./Taskfile_{{OS}}.yml
@@ -17,13 +17,13 @@ includes:
 tasks:
   # corbra
   cb-hi:
-    name: run cobra pb
+    name: run cobra protos
     cmds:
-      - go run cobra/pb/main.go -v
+      - go run cobra/protos/main.go -v
   cb-try:
-    name: run cobra pb try
+    name: run cobra protos try
     cmds:
-      - go run cobra/pb/main.go try
+      - go run cobra/protos/main.go try
 
   info:
     cmds:
@@ -103,15 +103,15 @@ tasks:
       - docker-compose up -d
   dk-build:
     cmds:
-      - docker build -t pb-golang-try .
+      - docker build -t protos-golang-try .
   dk-run:
     deps:
       - dk-build
     cmds:
-      - docker run --rm pb-golang-try
+      - docker run --rm protos-golang-try
   dk-build-test:
     cmds:
-      - docker build -t pb-golang-test -f Dockerfile.tests .
+      - docker build -t protos-golang-test -f Dockerfile.tests .
   dk-test:
     cmds:
       - docker-compose up -d db

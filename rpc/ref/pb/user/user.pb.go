@@ -110,7 +110,7 @@ func (m *User) GetUpdatedAt() *timestamp.Timestamp {
 }
 
 func init() {
-	proto.RegisterType((*User)(nil), "pb.user.User")
+	proto.RegisterType((*User)(nil), "protos.user.User")
 }
 
 func init() { proto.RegisterFile("user.proto", fileDescriptor_116e343673f7ffaf) }

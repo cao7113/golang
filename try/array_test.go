@@ -12,7 +12,7 @@ func TestArray(t *testing.T) {
 	logrus.Infof("integers=%+v", ints)
 
 	strs := []string{
-		"pb",
+		"protos",
 		"world",
 	}
 	logrus.Infof("strings: %+v", strs)
