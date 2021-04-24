@@ -25,7 +25,7 @@ tasks:
       - task: install-db-mig
 
   install-cilint:
-    name: install cilint by https://github.com/golangci/golangci-lint#macos
+    desc: install cilint as https://github.com/golangci/golangci-lint#macos
     status:
       - which golangci-lint > /dev/null
     cmds:
@@ -34,15 +34,21 @@ tasks:
 
   # gRPC https://developers.google.com/protocol-buffers/docs/reference/go-generated
   install-grpc:
+    desc: install grpc
     status:
       - which protoc-gen-go > /dev/null
     cmds:
       # protoc, protos compiler and plugins
       - brew install protobuf
       - brew install protoc-gen-go
-      # try use https://docs.buf.build/ instead prototool
-      # todo
       # - brew install prototool
+
+  install-buf:
+    desc: install buf https://docs.buf.build/ instead prototool
+    cmds:
+      - brew tap bufbuild/buf
+      - brew install buf
+
   install-grpcurl:
     desc: install grpcurl
     status:
