@@ -1,8 +1,6 @@
 # https://taskfile.dev
 version: '3'
-
 vars:
-  GREETING: Hello, Golang!
   DB_USER: root
   DB_PASSWORD: 
   DB_NAME: golang_test
@@ -11,26 +9,21 @@ vars:
   MYSQL_CLI_OPTS: "-u{{.DB_USER}} "
   #MIG_PATH: datasource/migrate
   MIG_PATH: migrations
-  GOMODNAME: "github.com/cao7113/hello-golang"
+  GOMODNAME: "github.com/cao7113/pb-golang"
 
 includes:
   os: ./Taskfile_{{OS}}.yml
 
 tasks:
-  hello:
-    cmds:
-      - echo "{{.GREETING}}"
-    silent: true
-
   # corbra
   cb-hi:
-    name: run cobra hello
+    name: run cobra pb
     cmds:
-      - go run cobra/hello/main.go -v
+      - go run cobra/pb/main.go -v
   cb-try:
-    name: run cobra hello try
+    name: run cobra pb try
     cmds:
-      - go run cobra/hello/main.go try
+      - go run cobra/pb/main.go try
 
   info:
     cmds:
@@ -110,15 +103,15 @@ tasks:
       - docker-compose up -d
   dk-build:
     cmds:
-      - docker build -t hello-golang-try .
+      - docker build -t pb-golang-try .
   dk-run:
     deps:
       - dk-build
     cmds:
-      - docker run --rm hello-golang-try
+      - docker run --rm pb-golang-try
   dk-build-test:
     cmds:
-      - docker build -t hello-golang-test -f Dockerfile.tests .
+      - docker build -t pb-golang-test -f Dockerfile.tests .
   dk-test:
     cmds:
       - docker-compose up -d db

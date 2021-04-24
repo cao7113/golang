@@ -122,7 +122,7 @@ func (m *Person) GetLastUpdated() *timestamp.Timestamp {
 
 type Person_PhoneNumber struct {
 	Number               string           `protobuf:"bytes,1,opt,name=number,proto3" json:"number,omitempty"`
-	Type                 Person_PhoneType `protobuf:"varint,2,opt,name=type,proto3,enum=hello.addressbook.Person_PhoneType" json:"type,omitempty"`
+	Type                 Person_PhoneType `protobuf:"varint,2,opt,name=type,proto3,enum=pb.addressbook.Person_PhoneType" json:"type,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -208,10 +208,10 @@ func (m *AddressBook) GetPeople() []*Person {
 }
 
 func init() {
-	proto.RegisterEnum("hello.addressbook.Person_PhoneType", Person_PhoneType_name, Person_PhoneType_value)
-	proto.RegisterType((*Person)(nil), "hello.addressbook.Person")
-	proto.RegisterType((*Person_PhoneNumber)(nil), "hello.addressbook.Person.PhoneNumber")
-	proto.RegisterType((*AddressBook)(nil), "hello.addressbook.AddressBook")
+	proto.RegisterEnum("pb.addressbook.Person_PhoneType", Person_PhoneType_name, Person_PhoneType_value)
+	proto.RegisterType((*Person)(nil), "pb.addressbook.Person")
+	proto.RegisterType((*Person_PhoneNumber)(nil), "pb.addressbook.Person.PhoneNumber")
+	proto.RegisterType((*AddressBook)(nil), "pb.addressbook.AddressBook")
 }
 
 func init() { proto.RegisterFile("pb/addressbook.proto", fileDescriptor_0e945a96804d5af6) }

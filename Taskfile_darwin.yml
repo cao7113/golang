@@ -1,45 +1,70 @@
 # https://taskfile.dev
 version: '3'
-
 tasks:
-
-  install:
+  setup:
+    desc: setup golang dev-env
     cmds:
-      - brew install hello-golang
-  
+      - task: install-asdf-golang
+      - task: install-tools
+
+  install-asdf-golang:
+    desc: install golang by great ASDF
+    status:
+      - which go > /dev/null
+    cmds:
+      - asdf plugin add golang || true
+      - asdf install golang 1.15.11
+      - asdf global golang 1.15.11
+      - go version
+
+  install-tools:
+    desc: install daily tools
+    cmds:
+      - task: install-cilint
+      - task: install-grpc
+      - task: install-db-mig
+
   install-cilint:
     name: install cilint by https://github.com/golangci/golangci-lint#macos
+    status:
+      - which golangci-lint > /dev/null
     cmds:
-      - brew install golangci/tap/golangci-lint
-      - brew upgrade golangci/tap/golangci-lint
-
-  install-grpcurl:
-    desc: install grpcurl
-    cmds:
-      - brew install grpcurl
-
-  install-direnv:
-    desc: install .envrc manager
-    cmds:
-      - brew install direnv
-      - echo hook your shell as https://direnv.net/docs/hook.html
-
-  install-db-mig:
-    desc: install migrations
-    cmds:
-      - which migrate || brew install golang-migrate
-      - migrate -version
+      - brew install golangci-lint
+      - golangci-lint --version
 
   # gRPC
+  install-grpc:
+    status:
+      - which protoc-gen-go > /dev/null
+    cmds:
+      # protoc, pb compiler and plugins
+      - brew install protobuf
+      - brew install protoc-gen-go
+      # try use https://docs.buf.build/ instead prototool
+      # todo
+      # - brew install prototool
+  install-grpcurl:
+    desc: install grpcurl
+    status:
+      - which grpcurl > /dev/null
+    cmds:
+      - brew install grpcurl
   install-bloomrpc:
     desc: install GUI client for gRPC
     cmds:
       - brew install bloomrpc
 
-  install-grpc:
+  # DB-tools
+  install-db-mig:
+    desc: install migrations
+    status:
+      - which migrate > /dev/null
     cmds:
-      # protoc, pb compiler and plugins
-      - brew install protobuf
-      - brew install protoc-gen-go
-      - which protoc protoc-gen-go
-      # - brew install prototool
+      - brew install golang-migrate
+      - migrate -version
+
+  ## collect good things from Golang world
+  install-gomplate:
+    desc: install gomplate tool
+    cmds:
+      - brew install gomplate

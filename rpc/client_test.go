@@ -10,11 +10,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 
-	"github.com/cao7113/hellogolang/rpc/hellopb"
+	"github.com/cao7113/hellogolang/rpc/pb"
 	"github.com/cao7113/hellogolang/rpc/server"
 )
 
-//go:generate protoc --go_out=plugins=grpc:. hellopb/*.proto
+//go:generate protoc --go_out=plugins=grpc:. pb/*.proto
 
 func (s *ClientTestSuite) TestDetailError() {
 	conn, err := grpc.Dial(*server.ConnAddress, grpc.WithInsecure())
@@ -30,8 +30,8 @@ func (s *ClientTestSuite) TestDetailError() {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	c := hellopb.NewGreeterClient(conn)
-	req := &hellopb.HelloRequest{
+	c := pb.NewGreeterClient(conn)
+	req := &pb.HelloRequest{
 		Name:  "try",
 		Error: "error",
 	}
@@ -41,13 +41,13 @@ func (s *ClientTestSuite) TestDetailError() {
 	se := status.Convert(err)
 	for _, d := range se.Details() {
 		switch info := d.(type) {
-		case *hellopb.Error:
+		case *pb.Error:
 			logrus.Infof("hit mock error: %+v", info)
 		default:
 			logrus.Fatalf("Unexpected type: %s", info)
 		}
 	}
-	logrus.Errorf("hello error: %+v", err)
+	logrus.Errorf("pb error: %+v", err)
 }
 
 type ClientTestSuite struct {

@@ -2,16 +2,16 @@
 version: '2'
 
 tasks:
-  # hello world
+  # pb world
   build:
-    desc: build hello world
+    desc: build pb world
     cmds:
       - protoc -I . helloworld/helloworld.proto --go_out=plugins=grpc:.
   server:
-    desc: run hello world server
+    desc: run pb world server
     cmds:
       - go run greeter_server/main.go
   client:
-    desc: run hello world client
+    desc: run pb world client
     cmds:
       - go run greeter_client/main.go

@@ -21,7 +21,7 @@ package main
 
 import (
 	"context"
-	"github.com/cao7113/hellogolang/rpc/rpcref/helloworld/helloworld"
+	"github.com/cao7113/hellogolang/rpc/ref/helloworld/helloworld"
 	"log"
 	"os"
 	"time"

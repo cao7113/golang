@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/cao7113/hellogolang/rpc/hellopb"
+	"github.com/cao7113/hellogolang/rpc/pb"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -11,13 +11,13 @@ import (
 
 type HelloServer struct{}
 
-func (h HelloServer) SayHello(ctx context.Context, req *hellopb.HelloRequest) (*hellopb.HelloReply, error) {
+func (h HelloServer) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloReply, error) {
 	logrus.Infof("handling request: %+v", req)
 	switch req.Error {
 	case "error":
 		st := status.New(codes.FailedPrecondition, "failed to satisfy pre-conditions")
 		ds, err := st.WithDetails(
-			&hellopb.Error{
+			&pb.Error{
 				Code:    int64(123),
 				Message: "mock error code",
 			},
@@ -27,7 +27,7 @@ func (h HelloServer) SayHello(ctx context.Context, req *hellopb.HelloRequest) (*
 		}
 		return nil, ds.Err()
 	}
-	reply := &hellopb.HelloReply{
+	reply := &pb.HelloReply{
 		Message: fmt.Sprintf("hi %s", req.Name),
 	}
 	return reply, nil

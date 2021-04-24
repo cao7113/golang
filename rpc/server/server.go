@@ -10,7 +10,7 @@ import (
 	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc"
 	"net"
 
-	"github.com/cao7113/hellogolang/rpc/hellopb"
+	"github.com/cao7113/hellogolang/rpc/pb"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -31,7 +31,7 @@ func StartRPCServer() {
 	var opts []grpc.ServerOption
 	opts = setupMiddlewares(opts)
 	s := grpc.NewServer(opts...)
-	hellopb.RegisterGreeterServer(s, &HelloServer{})
+	pb.RegisterGreeterServer(s, &HelloServer{})
 
 	logrus.Infof("running grpc server at %s", address)
 	if err := s.Serve(lis); err != nil {

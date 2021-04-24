@@ -1,5 +1,5 @@
 package main
 
 func main() {
-	println("run in main")
+	println("here is main entry")
 }

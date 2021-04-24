@@ -20,5 +20,5 @@ func TestLog(t *testing.T) {
 }
 
 func TestLogrus(t *testing.T) {
-	logrus.Infoln("hello", "logrus")
+	logrus.Infoln("pb", "logrus")
 }
