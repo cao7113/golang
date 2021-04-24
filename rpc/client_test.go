@@ -14,6 +14,8 @@ import (
 	"github.com/cao7113/hellogolang/rpc/server"
 )
 
+//go:generate protoc --go_out=plugins=grpc:. hellopb/*.proto
+
 func (s *ClientTestSuite) TestDetailError() {
 	conn, err := grpc.Dial(*server.ConnAddress, grpc.WithInsecure())
 	if err != nil {

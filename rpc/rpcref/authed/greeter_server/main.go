@@ -24,11 +24,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/cao7113/hellogolang/rpc/rpcref/helloworld/helloworld"
 	"log"
 	"net"
 
-	//pb "google.golang.org/grpc/examples/helloworld/helloworld"
-	pb "github.com/cao7113/hellogolang/rpcref/helloworld/helloworld"
 	"google.golang.org/grpc"
 )
 
@@ -38,20 +37,20 @@ const (
 
 // server is used to implement helloworld.GreeterServer.
 type server struct {
-	pb.UnimplementedGreeterServer
+	helloworld.UnimplementedGreeterServer
 }
 
 // SayHello implements helloworld.GreeterServer
-func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+func (s *server) SayHello(ctx context.Context, in *helloworld.HelloRequest) (*helloworld.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	msg := fmt.Sprintf("Hello %s from grpc server", in.GetName())
-	return &pb.HelloReply{Message: msg}, nil
+	return &helloworld.HelloReply{Message: msg}, nil
 }
 
-func (s *server) SayHelloAgain(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+func (s *server) SayHelloAgain(ctx context.Context, in *helloworld.HelloRequest) (*helloworld.HelloReply, error) {
 	//log.Printf("Received: %v again", in.GetName())
 	msg := fmt.Sprintf("Hello %s from grpc server Again", in.GetName())
-	return &pb.HelloReply{Message: msg}, nil
+	return &helloworld.HelloReply{Message: msg}, nil
 }
 
 func main() {
@@ -60,7 +59,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, &server{})
+	helloworld.RegisterGreeterServer(s, &server{})
 	log.Printf("==start grpc server on port: %s", port)
 	err = s.Serve(lis)
 	if err != nil {
