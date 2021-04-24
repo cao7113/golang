@@ -1,7 +1,0 @@
-# https://taskfile.dev
-version: '2'
-tasks:
-  caccount:
-    desc: compile account
-    cmds:
-      - protoc --go_out=plugins=grpc:. account/*.proto
