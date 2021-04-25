@@ -6,8 +6,6 @@ require (
 	github.com/DataDog/datadog-go v4.2.0+incompatible // indirect
 	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/golang/mock v1.2.0
-	github.com/golang/protobuf v1.4.1
-	github.com/google/uuid v1.1.2 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
 	github.com/jinzhu/gorm v1.9.11
 	github.com/joho/godotenv v1.3.0
@@ -21,9 +19,12 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.5.0
-	github.com/stretchr/testify v1.4.0
-	google.golang.org/grpc v1.27.0
-	google.golang.org/protobuf v1.25.0
+	github.com/stretchr/testify v1.5.1
+	golang.org/x/net v0.0.0-20210423184538-5f58ad60dda6 // indirect
+	golang.org/x/sys v0.0.0-20210423185535-09eb48e85fd7 // indirect
+	google.golang.org/genproto v0.0.0-20210423144448-3a41ef94ed2b // indirect
+	google.golang.org/grpc v1.37.0
+	google.golang.org/protobuf v1.26.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.27.1
 	gopkg.in/yaml.v2 v2.2.7 // indirect
 )

@@ -2,19 +2,49 @@ package rpc
 
 import (
 	"context"
-	"testing"
-	"time"
-
+	pb "github.com/cao7113/hellogolang/rpc/protos"
+	"github.com/cao7113/hellogolang/rpc/server"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
-
-	"github.com/cao7113/hellogolang/rpc/protos"
-	"github.com/cao7113/hellogolang/rpc/server"
+	"testing"
+	"time"
 )
 
-//go:generate protoc --go_out=plugins=grpc:. protos/*.proto
+func (s *ClientTestSuite) TestTryCtx() {
+	//ct := context.Background()
+	//bct := context.WithTimeout(ct, 3 * time.Second)
+	conn, err := grpc.Dial(*server.ConnAddress, grpc.WithInsecure())
+	if err != nil {
+		logrus.Fatalf("connect server %v", err)
+	}
+	defer func() {
+		if e := conn.Close(); e != nil {
+			logrus.Infof("failed to close connection: %s", e)
+		}
+	}()
+
+	// without context timeout
+	for i := 0; i < 5; i++ {
+		go func() {
+
+		}()
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	c := pb.NewGreeterClient(conn)
+	req := &pb.HelloRequest{
+		Name:  "try",
+		Error: "error",
+	}
+	r, err := c.SayHello(ctx, req)
+	s.Nil(r)
+	s.NotNil(err)
+	logrus.Errorf("protos error: %+v", err)
+}
 
 func (s *ClientTestSuite) TestDetailError() {
 	conn, err := grpc.Dial(*server.ConnAddress, grpc.WithInsecure())

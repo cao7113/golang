@@ -6,18 +6,21 @@ import (
 	"fmt"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	//grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	pb "github.com/cao7113/hellogolang/rpc/protos"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc"
-	"net"
-
-	"github.com/cao7113/hellogolang/rpc/protos"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc"
+	"net"
 )
 
 var ConnAddress = flag.String("ConnAddress", "localhost:50051", "rpc address")
+
+//var (
+//	_ pb.GreeterServer = &HelloServer{}
+//)
 
 func StartRPCServer() {
 	flag.Parse()
@@ -31,7 +34,8 @@ func StartRPCServer() {
 	var opts []grpc.ServerOption
 	opts = setupMiddlewares(opts)
 	s := grpc.NewServer(opts...)
-	pb.RegisterGreeterServer(s, &HelloServer{})
+	svr := &HelloServer{}
+	pb.RegisterGreeterServer(s, svr)
 
 	logrus.Infof("running grpc server at %s", address)
 	if err := s.Serve(lis); err != nil {

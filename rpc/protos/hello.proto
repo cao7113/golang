@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package hello;
 
+option go_package = "github.com/cao7113/hellogolang/rpc/protos";
+
 service Greeter {
   rpc SayHello (HelloRequest) returns (HelloReply) {}
   rpc TryContext (TcRequest) returns (TcReply) {}
