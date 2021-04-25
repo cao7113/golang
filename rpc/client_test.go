@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"fmt"
 	pb "github.com/cao7113/hellogolang/rpc/protos"
 	"github.com/cao7113/hellogolang/rpc/server"
 	"github.com/sirupsen/logrus"
@@ -12,10 +13,11 @@ import (
 	"time"
 )
 
-func (s *ClientTestSuite) TestTryCtx() {
-	//ct := context.Background()
-	//bct := context.WithTimeout(ct, 3 * time.Second)
-	conn, err := grpc.Dial(*server.ConnAddress, grpc.WithInsecure())
+func (s *ClientTestSuite) TestWithTimeout() {
+	ct := context.Background()
+	bct, cancel := context.WithTimeout(ct, 3*time.Second)
+	defer cancel()
+	conn, err := grpc.DialContext(bct, *server.ConnAddress, grpc.WithInsecure())
 	if err != nil {
 		logrus.Fatalf("connect server %v", err)
 	}
@@ -26,24 +28,60 @@ func (s *ClientTestSuite) TestTryCtx() {
 	}()
 
 	// without context timeout
-	for i := 0; i < 5; i++ {
-		go func() {
-
-		}()
+	for i := 0; i < 1; i++ {
+		for j := 0; j < 10; j++ {
+			time.Sleep(1 * time.Millisecond)
+			go func(i, j int) {
+				ctx := context.Background()
+				c := pb.NewGreeterClient(conn)
+				from := fmt.Sprintf("sub-%d-%d", i, j)
+				req := &pb.TcRequest{
+					From: from,
+				}
+				r, err := c.TryContext(ctx, req)
+				logrus.Infof("client request with from %s", from)
+				s.Nil(err)
+				logrus.Infof("response: %s", r.Msg)
+			}(i, j)
+		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
+	time.Sleep(10 * time.Hour)
+	logrus.Infof("over")
+}
 
-	c := pb.NewGreeterClient(conn)
-	req := &pb.HelloRequest{
-		Name:  "try",
-		Error: "error",
+func (s *ClientTestSuite) TestWithoutTimeout() {
+	conn, err := grpc.Dial(*server.ConnAddress, grpc.WithInsecure())
+	if err != nil {
+		logrus.Fatalf("connect server %v", err)
 	}
-	r, err := c.SayHello(ctx, req)
-	s.Nil(r)
-	s.NotNil(err)
-	logrus.Errorf("protos error: %+v", err)
+	defer func() {
+		if e := conn.Close(); e != nil {
+			logrus.Infof("failed to close connection: %s", e)
+		}
+	}()
+
+	// no timeout
+	for i := 0; i < 100; i++ {
+		for j := 0; j < 500; j++ {
+			time.Sleep(1 * time.Millisecond)
+			go func(i, j int) {
+				ctx := context.Background()
+				c := pb.NewGreeterClient(conn)
+				from := fmt.Sprintf("sub-%d-%d", i, j)
+				req := &pb.TcRequest{
+					From: from,
+				}
+				r, err := c.TryContext(ctx, req)
+				logrus.Infof("client request with from %s", from)
+				s.Nil(err)
+				logrus.Infof("response: %s", r.Msg)
+			}(i, j)
+		}
+	}
+
+	time.Sleep(30 * time.Hour)
+	logrus.Infof("over")
 }
 
 func (s *ClientTestSuite) TestDetailError() {
@@ -86,6 +124,7 @@ type ClientTestSuite struct {
 
 // The SetupSuite method will be run before any tests are run.
 func (s *ClientTestSuite) SetupSuite() {
+	//runtime.GOMAXPROCS(2)
 	go server.StartRPCServer()
 	time.Sleep(1 * time.Second)
 }

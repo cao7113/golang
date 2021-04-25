@@ -16,11 +16,16 @@ type HelloServer struct {
 
 func (h HelloServer) TryContext(ctx context.Context, req *pb.TcRequest) (*pb.TcReply, error) {
 	dt, ok := ctx.Deadline()
-	logrus.Infof("request %+v with deadline: %s ok: %+v in context: %+v", req, dt, ok, ctx)
+	if ok {
+		logrus.Infof("request %+v with deadline: %s", req, dt)
+	}
 	i := 0
 	for {
-		logrus.Infof("count: %+v", i)
-		time.Sleep(2 * time.Second)
+		if i%10 == 0 {
+			logrus.Infof("from: %s count: %+v", req.From, i/10)
+		}
+		i++
+		time.Sleep(1 * time.Second)
 	}
 	rp := &pb.TcReply{
 		Msg: "response from server",
