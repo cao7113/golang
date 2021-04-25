@@ -10,7 +10,7 @@ tasks:
   gen:
     desc: gen protos protos.go file
     cmds:
-      - protoc --go_out=plugins=grpc:. protos/*.proto
+      #- protoc --go_out=plugins=grpc:. protos/*.proto
   run:
     desc: start grpc server
     cmds:

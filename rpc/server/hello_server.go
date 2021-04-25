@@ -21,21 +21,27 @@ func (h HelloServer) TryContext(ctx context.Context, req *pb.TcRequest) (*pb.TcR
 	}
 	i := 0
 	for {
-		if i%10 == 0 {
-			logrus.Infof("from: %s count: %+v", req.From, i/10)
-		}
+		n := fibN(40) // 102334155
+		time.Sleep(10 * time.Millisecond)
+
+		//n := fibN(1)
+		//time.Sleep(2 * time.Second)
+
+		logrus.Infof("%s requesting from: %s count: %+v fibN: %d", time.Now().Format(time.RFC3339), req.From, i, n)
 		i++
-		time.Sleep(1 * time.Second)
 	}
 	rp := &pb.TcReply{
-		Msg: "response from server",
+		Msg: fmt.Sprintf("response from server for from: %s", req.From),
 	}
 	return rp, nil
 }
 
-//func (h HelloServer) mustEmbedUnimplementedGreeterServer() {
-//	panic("implement me")
-//}
+func fibN(n int) int {
+	if n <= 1 {
+		return n
+	}
+	return fibN(n-1) + fibN(n-2)
+}
 
 func (h HelloServer) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloReply, error) {
 	logrus.Infof("handling request: %+v", req)

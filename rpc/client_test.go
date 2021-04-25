@@ -9,9 +9,54 @@ import (
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
+	"runtime"
 	"testing"
 	"time"
 )
+
+func (s *ClientTestSuite) TestWithCallTimeout() {
+	ct := context.Background()
+	bct, cancel := context.WithTimeout(ct, 3*time.Second)
+	defer cancel()
+	conn, err := grpc.DialContext(bct, *server.ConnAddress, grpc.WithInsecure())
+	if err != nil {
+		logrus.Fatalf("connect server %v", err)
+	}
+	defer func() {
+		if e := conn.Close(); e != nil {
+			logrus.Infof("failed to close connection: %s", e)
+		}
+	}()
+
+	// without context timeout
+	for i := 0; i < 2; i++ {
+		for j := 0; j < 3; j++ {
+			//time.Sleep(1 * time.Millisecond)
+			go func(i, j int) {
+				ctx := context.Background()
+				ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+				defer cancel()
+				c := pb.NewGreeterClient(conn)
+				from := fmt.Sprintf("sub-%d-%d", i, j)
+				req := &pb.TcRequest{
+					From: from,
+				}
+				logrus.Infof("client request with from %s", from)
+				r, err := c.TryContext(ctx, req)
+				if err != nil {
+					st := status.Convert(err)
+					logrus.Errorf("from: %s error: code: %d message: %s", from, st.Code(), st.Message())
+				}
+				if r != nil {
+					logrus.Infof("client from: %s got msg: %s", from, r.Msg)
+				}
+			}(i, j)
+		}
+	}
+
+	time.Sleep(10 * time.Hour)
+	logrus.Infof("over")
+}
 
 func (s *ClientTestSuite) TestWithTimeout() {
 	ct := context.Background()
@@ -28,9 +73,9 @@ func (s *ClientTestSuite) TestWithTimeout() {
 	}()
 
 	// without context timeout
-	for i := 0; i < 1; i++ {
-		for j := 0; j < 10; j++ {
-			time.Sleep(1 * time.Millisecond)
+	for i := 0; i < 2; i++ {
+		for j := 0; j < 3; j++ {
+			//time.Sleep(1 * time.Millisecond)
 			go func(i, j int) {
 				ctx := context.Background()
 				c := pb.NewGreeterClient(conn)
@@ -38,10 +83,15 @@ func (s *ClientTestSuite) TestWithTimeout() {
 				req := &pb.TcRequest{
 					From: from,
 				}
-				r, err := c.TryContext(ctx, req)
 				logrus.Infof("client request with from %s", from)
-				s.Nil(err)
-				logrus.Infof("response: %s", r.Msg)
+				r, err := c.TryContext(ctx, req)
+				if err != nil {
+					st := status.Convert(err)
+					logrus.Errorf("from: %s error: code: %d message: %s", from, st.Code(), st.Message())
+				}
+				if r != nil {
+					logrus.Infof("client from: %s got msg: %s", from, r.Msg)
+				}
 			}(i, j)
 		}
 	}
@@ -50,7 +100,7 @@ func (s *ClientTestSuite) TestWithTimeout() {
 	logrus.Infof("over")
 }
 
-func (s *ClientTestSuite) TestWithoutTimeout() {
+func (s *ClientTestSuite) TestAllWithoutTimeout() {
 	conn, err := grpc.Dial(*server.ConnAddress, grpc.WithInsecure())
 	if err != nil {
 		logrus.Fatalf("connect server %v", err)
@@ -61,10 +111,9 @@ func (s *ClientTestSuite) TestWithoutTimeout() {
 		}
 	}()
 
-	// no timeout
-	for i := 0; i < 100; i++ {
-		for j := 0; j < 500; j++ {
-			time.Sleep(1 * time.Millisecond)
+	for i := 0; i < 200; i++ {
+		for j := 0; j < 3; j++ {
+			//time.Sleep(1 * time.Millisecond)
 			go func(i, j int) {
 				ctx := context.Background()
 				c := pb.NewGreeterClient(conn)
@@ -72,15 +121,20 @@ func (s *ClientTestSuite) TestWithoutTimeout() {
 				req := &pb.TcRequest{
 					From: from,
 				}
-				r, err := c.TryContext(ctx, req)
 				logrus.Infof("client request with from %s", from)
-				s.Nil(err)
-				logrus.Infof("response: %s", r.Msg)
+				r, err := c.TryContext(ctx, req)
+				if err != nil {
+					st := status.Convert(err)
+					logrus.Errorf("from: %s error: code: %d message: %s", from, st.Code(), st.Message())
+				}
+				if r != nil {
+					logrus.Infof("client from: %s got msg: %s", from, r.Msg)
+				}
 			}(i, j)
 		}
 	}
 
-	time.Sleep(30 * time.Hour)
+	time.Sleep(10 * time.Hour)
 	logrus.Infof("over")
 }
 
@@ -124,9 +178,9 @@ type ClientTestSuite struct {
 
 // The SetupSuite method will be run before any tests are run.
 func (s *ClientTestSuite) SetupSuite() {
-	//runtime.GOMAXPROCS(2)
-	go server.StartRPCServer()
-	time.Sleep(1 * time.Second)
+	runtime.GOMAXPROCS(2)
+	//go server.StartRPCServer()
+	//time.Sleep(1 * time.Second)
 }
 
 // The TearDownSuite method will be run after all tests have been run.
