@@ -31,7 +31,7 @@ func (s *ClientTestSuite) TestSlow() {
 	req := &pb.SlowRequest{
 		Seconds: 10,
 	}
-	logrus.Infof("requesting with %+v", req)
+	logrus.Infof("[client] requesting with %+v", req)
 	r, err := c.Slow(ct, req)
 	if err != nil {
 		st := status.Convert(err)

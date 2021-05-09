@@ -50,7 +50,7 @@ tasks:
       - |
         docker run --rm -v "$(pwd):/work" uber/prototool:1.10.0 \
         prototool version
-        
+
   # buf.build
   buf-init:
     desc: init buf config

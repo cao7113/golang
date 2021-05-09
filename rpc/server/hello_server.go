@@ -15,7 +15,7 @@ type HelloServer struct {
 }
 
 func (h HelloServer) Slow(ctx context.Context, req *pb.SlowRequest) (*pb.SlowResponse, error) {
-	logrus.Infof("requesting with %+v", req)
+	logrus.Infof("[server] requesting with %+v", req)
 	time.Sleep(time.Duration(req.Seconds) * time.Second)
 	resp := &pb.SlowResponse{
 		Msg: fmt.Sprintf("slow reply after %d seconds", req.Seconds),
