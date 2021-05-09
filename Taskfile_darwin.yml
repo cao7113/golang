@@ -37,7 +37,7 @@ tasks:
     status:
       - which protoc-gen-go > /dev/null
     cmds:
-      # protoc, protos compiler and plugins
+      # protoc, proto compiler and plugins
       - brew install protobuf
       - brew install protoc-gen-go
       - brew install protoc-gen-go-grpc

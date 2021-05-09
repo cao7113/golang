@@ -9,21 +9,35 @@ vars:
   MYSQL_CLI_OPTS: "-u{{.DB_USER}} "
   #MIG_PATH: datasource/migrate
   MIG_PATH: migrations
-  GOMODNAME: "github.com/cao7113/protos-golang"
+  GOMODNAME: "github.com/cao7113/proto-golang"
+  pt_version: 1.10.0
 
 includes:
   os: ./Taskfile_{{OS}}.yml
 
 tasks:
+
+  install-prototool-docker:
+    desc: install uber prototool docker from https://github.com/uber/prototool
+    cmds:
+      - docker pull uber/prototool:{{.pt_version}}
+      - docker run --rm uber/prototool prototool version
+
+  pt:
+    cmds:
+      - |
+        docker run --rm -v "$(pwd):/work" uber/prototool:{{.pt_version}} \
+        prototool version
+
   # corbra
   cb-hi:
-    name: run cobra protos
+    name: run cobra proto
     cmds:
-      - go run cobra/protos/main.go -v
+      - go run cobra/proto/main.go -v
   cb-try:
-    name: run cobra protos try
+    name: run cobra proto try
     cmds:
-      - go run cobra/protos/main.go try
+      - go run cobra/proto/main.go try
 
   info:
     cmds:
@@ -103,15 +117,15 @@ tasks:
       - docker-compose up -d
   dk-build:
     cmds:
-      - docker build -t protos-golang-try .
+      - docker build -t proto-golang-try .
   dk-run:
     deps:
       - dk-build
     cmds:
-      - docker run --rm protos-golang-try
+      - docker run --rm proto-golang-try
   dk-build-test:
     cmds:
-      - docker build -t protos-golang-test -f Dockerfile.tests .
+      - docker build -t proto-golang-test -f Dockerfile.tests .
   dk-test:
     cmds:
       - docker-compose up -d db

@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
-	pb "github.com/cao7113/hellogolang/rpc/protos/gen/protos"
+	pb "github.com/cao7113/hellogolang/proto/gosdk/proto/hello/v1"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -11,10 +11,10 @@ import (
 )
 
 type HelloServer struct {
-	pb.UnimplementedGreeterServer
+	pb.UnimplementedHelloServiceServer
 }
 
-func (h HelloServer) TryContext(ctx context.Context, req *pb.TcRequest) (*pb.TcReply, error) {
+func (h HelloServer) TryContext(ctx context.Context, req *pb.TryContextRequest) (*pb.TryContextResponse, error) {
 	dt, ok := ctx.Deadline()
 	if ok {
 		logrus.Infof("request %+v with deadline: %s", req, dt)
@@ -30,7 +30,7 @@ func (h HelloServer) TryContext(ctx context.Context, req *pb.TcRequest) (*pb.TcR
 		logrus.Infof("%s requesting from: %s count: %+v fibN: %d", time.Now().Format(time.RFC3339), req.From, i, n)
 		i++
 	}
-	rp := &pb.TcReply{
+	rp := &pb.TryContextResponse{
 		Msg: fmt.Sprintf("response from server for from: %s", req.From),
 	}
 	return rp, nil
@@ -43,7 +43,7 @@ func fibN(n int) int {
 	return fibN(n-1) + fibN(n-2)
 }
 
-func (h HelloServer) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloReply, error) {
+func (h HelloServer) Hello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
 	logrus.Infof("handling request: %+v", req)
 	switch req.Error {
 	case "error":
@@ -59,7 +59,7 @@ func (h HelloServer) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.He
 		}
 		return nil, ds.Err()
 	}
-	reply := &pb.HelloReply{
+	reply := &pb.HelloResponse{
 		Message: fmt.Sprintf("hi %s", req.Name),
 	}
 	return reply, nil

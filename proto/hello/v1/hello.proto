@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package proto.hello.v1;
+option go_package = "github.com/cao7113/hellogolang/proto/gosdk/proto/hellov1";
+
+service HelloService {
+  rpc Hello (HelloRequest) returns (HelloResponse) {}
+  rpc TryContext (TryContextRequest) returns (TryContextResponse) {}
+}
+
+message HelloRequest {
+  string name = 1;
+  string error = 2;
+}
+
+message HelloResponse {
+  string message = 1;
+}
+
+message Error {
+  int64 code = 1;
+  string message = 2;
+}
+
+message TryContextRequest {
+  string from = 1;
+}
+
+message TryContextResponse {
+  string msg = 1;
+}

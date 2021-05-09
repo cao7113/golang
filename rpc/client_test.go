@@ -3,7 +3,7 @@ package rpc
 import (
 	"context"
 	"fmt"
-	pb "github.com/cao7113/hellogolang/rpc/protos/gen/protos"
+	pb "github.com/cao7113/hellogolang/proto/gosdk/proto/hello/v1"
 	"github.com/cao7113/hellogolang/rpc/server"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
@@ -39,9 +39,9 @@ func (s *ClientTestSuite) TestWithCallTimeout() {
 				ctx := context.Background()
 				ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 				defer cancel()
-				c := pb.NewGreeterClient(conn)
+				c := pb.NewHelloServiceClient(conn)
 				from := fmt.Sprintf("sub-%d-%d", i, j)
-				req := &pb.TcRequest{
+				req := &pb.TryContextRequest{
 					From: from,
 				}
 				logrus.Infof("client request with from %s", from)
@@ -81,9 +81,9 @@ func (s *ClientTestSuite) TestWithTimeout() {
 			//time.Sleep(1 * time.Millisecond)
 			go func(i, j int) {
 				ctx := context.Background()
-				c := pb.NewGreeterClient(conn)
+				c := pb.NewHelloServiceClient(conn)
 				from := fmt.Sprintf("sub-%d-%d", i, j)
-				req := &pb.TcRequest{
+				req := &pb.TryContextRequest{
 					From: from,
 				}
 				logrus.Infof("client request with from %s", from)
@@ -121,13 +121,13 @@ func (s *ClientTestSuite) TestWithTimeout1() {
 
 	//ctx := context.Background()
 	ctx := bct
-	c := pb.NewGreeterClient(conn)
+	c := pb.NewHelloServiceClient(conn)
 	for i := 0; i < 1; i++ {
 		for j := 0; j < 1; j++ {
 			//time.Sleep(1 * time.Millisecond)
 			go func(i, j int) {
 				from := fmt.Sprintf("sub-%d-%d", i, j)
-				req := &pb.TcRequest{
+				req := &pb.TryContextRequest{
 					From: from,
 				}
 				logrus.Infof("client request with from %s", from)
@@ -163,9 +163,9 @@ func (s *ClientTestSuite) TestAllWithoutTimeout() {
 			//time.Sleep(1 * time.Millisecond)
 			go func(i, j int) {
 				ctx := context.Background()
-				c := pb.NewGreeterClient(conn)
+				c := pb.NewHelloServiceClient(conn)
 				from := fmt.Sprintf("sub-%d-%d", i, j)
-				req := &pb.TcRequest{
+				req := &pb.TryContextRequest{
 					From: from,
 				}
 				logrus.Infof("client request with from %s", from)
@@ -210,12 +210,12 @@ func (s *ClientTestSuite) TestDetailError() {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	c := pb.NewGreeterClient(conn)
+	c := pb.NewHelloServiceClient(conn)
 	req := &pb.HelloRequest{
 		Name:  "try",
 		Error: "error",
 	}
-	r, err := c.SayHello(ctx, req)
+	r, err := c.Hello(ctx, req)
 	s.Nil(r)
 	s.NotNil(err)
 	se := status.Convert(err)
@@ -227,7 +227,7 @@ func (s *ClientTestSuite) TestDetailError() {
 			logrus.Fatalf("Unexpected type: %s", info)
 		}
 	}
-	logrus.Errorf("protos error: %+v", err)
+	logrus.Errorf("proto error: %+v", err)
 }
 
 type ClientTestSuite struct {

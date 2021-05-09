@@ -6,7 +6,7 @@ import (
 	"fmt"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	//grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	pb "github.com/cao7113/hellogolang/rpc/protos/gen/protos"
+	pb "github.com/cao7113/hellogolang/proto/gosdk/proto/hello/v1"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -35,7 +35,7 @@ func StartRPCServer() {
 	opts = setupMiddlewares(opts)
 	s := grpc.NewServer(opts...)
 	svr := &HelloServer{}
-	pb.RegisterGreeterServer(s, svr)
+	pb.RegisterHelloServiceServer(s, svr)
 
 	logrus.Infof("running grpc server at %s", address)
 	if err := s.Serve(lis); err != nil {
