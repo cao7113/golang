@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
-	pb "github.com/cao7113/hellogolang/rpc/protos"
+	pb "github.com/cao7113/hellogolang/rpc/protos/gen/protos"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

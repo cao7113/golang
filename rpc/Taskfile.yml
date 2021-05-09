@@ -10,11 +10,27 @@ tasks:
   gen:
     desc: gen protos protos.go file
     cmds:
-      #- protoc --go_out=plugins=grpc:. protos/*.proto
+      - protoc --go_out=plugins=grpc:. protos/*.proto
+
   run:
     desc: start grpc server
     cmds:
       - go run -v server/cmd/main.go
+
+  # buf.build
+  buf-init:
+    desc: init buf config
+    cmds:
+      - buf beta mod init
+      - cat buf.yaml
+
+  # buf commands
+  # - buf breaking --against '.git#branch=master'
+  # - buf breaking --against '.git#tag=v1.0.0'
+  # docker version, entrypoint: buf
+  # docker pull bufbuild/buf
+  # docker run --volume "$(pwd):/workspace" --workdir "/workspace" bufbuild/buf lint
+
   try:
     desc: try it
     cmds:
@@ -47,7 +63,7 @@ tasks:
         done
 
   dde:
-    desc: try request datadog
+    desc: try request datadog with error
     cmds:
       - |
         for i in {1..50}; do echo $i; grpcurl -plaintext -proto hello/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq

@@ -1,4 +1,3 @@
-# https://taskfile.dev
 version: '3'
 tasks:
   setup:
@@ -34,14 +33,19 @@ tasks:
 
   # gRPC https://developers.google.com/protocol-buffers/docs/reference/go-generated
   install-grpc:
-    desc: install grpc
+    desc: install grpc tools
     status:
       - which protoc-gen-go > /dev/null
     cmds:
       # protoc, protos compiler and plugins
       - brew install protobuf
       - brew install protoc-gen-go
-      # - brew install prototool
+      - brew install protoc-gen-go-grpc
+  install-prototool:
+    desc: install uber prototool from https://github.com/uber/prototool
+    cmds:
+      - brew install prototool
+      # - prototool version
 
   install-buf:
     desc: install buf https://docs.buf.build/ instead prototool
@@ -60,7 +64,7 @@ tasks:
     cmds:
       - brew install bloomrpc
 
-  # DB-tools
+  # DB tools
   install-db-mig:
     desc: install migrations
     status:
@@ -69,7 +73,7 @@ tasks:
       - brew install golang-migrate
       - migrate -version
 
-  ## collect good things from Golang world
+  ## Great tools
   install-gomplate:
     desc: install gomplate tool
     cmds:

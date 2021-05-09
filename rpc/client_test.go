@@ -3,16 +3,19 @@ package rpc
 import (
 	"context"
 	"fmt"
-	pb "github.com/cao7113/hellogolang/rpc/protos"
+	pb "github.com/cao7113/hellogolang/rpc/protos/gen/protos"
 	"github.com/cao7113/hellogolang/rpc/server"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"runtime"
 	"testing"
 	"time"
 )
+
+// call with timeout context
 
 func (s *ClientTestSuite) TestWithCallTimeout() {
 	ct := context.Background()
@@ -180,6 +183,17 @@ func (s *ClientTestSuite) TestAllWithoutTimeout() {
 
 	time.Sleep(10 * time.Hour)
 	logrus.Infof("over")
+}
+
+func (s *ClientTestSuite) TestStatusCode() {
+	reason := "testing"
+	err := status.Errorf(codes.FailedPrecondition, "failed precondition %s", reason)
+
+	err1, ok := status.FromError(err)
+	s.True(ok)
+	s.Equal(codes.FailedPrecondition, err1.Code())
+	// "msg: failed precondition testing, code: FailedPrecondition, str: FailedPrecondition"
+	logrus.Infof("msg: %s, code: %v, str: %s", err1.Message(), err1.Code(), err1.Code().String())
 }
 
 func (s *ClientTestSuite) TestDetailError() {

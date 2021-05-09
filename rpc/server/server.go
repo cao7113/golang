@@ -6,7 +6,7 @@ import (
 	"fmt"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	//grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	pb "github.com/cao7113/hellogolang/rpc/protos"
+	pb "github.com/cao7113/hellogolang/rpc/protos/gen/protos"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
