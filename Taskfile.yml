@@ -10,34 +10,128 @@ vars:
   #MIG_PATH: datasource/migrate
   MIG_PATH: migrations
   GOMODNAME: "github.com/cao7113/proto-golang"
-  pt_version: 1.10.0
 
 includes:
   os: ./Taskfile_{{OS}}.yml
 
 tasks:
+  rpc:
+    desc: start hello grpc server
+    cmds:
+      - go run -v rpc/cmd/main.go
+
+  # pb-grpc
+
+  g:
+    cmds:
+      - |
+        protoc --go_out=. --go_opt=paths=source_relative \
+        --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+        proto/hello/v1/hello.proto
+
+  install-pb-go-from-source:
+    cmds:
+      - |
+        go get google.golang.org/protobuf/cmd/protoc-gen-go \
+        google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
   install-prototool-docker:
     desc: install uber prototool docker from https://github.com/uber/prototool
     cmds:
       - docker pull uber/prototool:{{.pt_version}}
       - docker run --rm uber/prototool prototool version
+  install-buf-docker:
+    desc: install buf-build docker https://docs.buf.build/tour-10
+    cmds:
+      - docker pull bufbuild/buf:0.41.0
 
   pt:
     cmds:
       - |
-        docker run --rm -v "$(pwd):/work" uber/prototool:{{.pt_version}} \
+        docker run --rm -v "$(pwd):/work" uber/prototool:1.10.0 \
         prototool version
+        
+  # buf.build
+  buf-init:
+    desc: init buf config
+    cmds:
+      - buf beta mod init
+      - cat buf.yaml
+  buf-g:
+    cmds:
+      - buf generate
 
-  # corbra
+  # buf commands
+  # - buf breaking --against '.git#branch=master'
+  # - buf breaking --against '.git#tag=v1.0.0'
+  # docker version, entrypoint: buf
+  # docker pull bufbuild/buf
+  # docker run --volume "$(pwd):/workspace" --workdir "/workspace" bufbuild/buf lint
+
+  ## Grpc service
+  hi:
+    desc: try it
+    cmds:
+      - |
+        grpcurl -plaintext -proto proto/hello/v1/hello.proto -d @ localhost:50051 proto.hello.v1.HelloService.Hello <<-EOM | jq
+          {
+             "name": "geek"
+          }
+        EOM
+  slow:
+    desc: try it
+    cmds:
+      - |
+        grpcurl -plaintext -proto proto/hello/v1/hello.proto -d @ localhost:50051 proto.hello.v1.HelloService.Slow <<-EOM | jq
+          {
+             "seconds": 10
+          }
+        EOM
+  error:
+    desc: try with error
+    cmds:
+      - |
+        grpcurl -plaintext -proto hellopb/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq
+          {
+          "name": "geek",
+          "error": "error"
+          }
+        EOM
+
+  ## Datadog trace
+  dd:
+    desc: try request datadog
+    cmds:
+      - |
+        for i in {1..1000}; do echo $i; grpcurl -plaintext -proto hello/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq
+          {
+          "name": "geek"
+          }
+        EOM
+        done
+
+  dde:
+    desc: try request datadog with error
+    cmds:
+      - |
+        for i in {1..50}; do echo $i; grpcurl -plaintext -proto hello/hello.proto -d @ localhost:50051 hello.Greeter.SayHello <<-EOM | jq
+        {
+          "name": "geek",
+          "error": "error"
+        }
+        EOM
+        sleep 0.5
+        done
+
+  ## Command cli corbra
   cb-hi:
-    name: run cobra proto
+    name: run cobra hello
     cmds:
-      - go run cobra/proto/main.go -v
+      - go run cobra/hello/main.go -v
   cb-try:
-    name: run cobra proto try
+    name: run cobra hello try
     cmds:
-      - go run cobra/proto/main.go try
+      - go run cobra/hello/main.go try
 
   info:
     cmds:
@@ -99,10 +193,6 @@ tasks:
     desc: install mockgen
     cmds:
       - go install github.com/golang/mock/mockgen
-
-  run:
-    cmds:
-      - go run main.go
 
   mod-up:
     cmds:
@@ -176,7 +266,7 @@ tasks:
       - echo should implement in Taskfile_{{GOOS}}.yml
 
   ## gore CLI
-  cli:
+  gore-cli:
     desc: Auto-importing (gore -autoimport), quit using Ctrl+D or :quit or :q
     cmds:
       - gore -autoimport

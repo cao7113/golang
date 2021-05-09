@@ -18,10 +18,6 @@ import (
 
 var ConnAddress = flag.String("ConnAddress", "localhost:50051", "rpc address")
 
-//var (
-//	_ pb.GreeterServer = &HelloServer{}
-//)
-
 func StartRPCServer() {
 	flag.Parse()
 
@@ -37,6 +33,7 @@ func StartRPCServer() {
 	svr := &HelloServer{}
 	pb.RegisterHelloServiceServer(s, svr)
 
+	// todo graceful shutdown!!! todo
 	logrus.Infof("running grpc server at %s", address)
 	if err := s.Serve(lis); err != nil {
 		logrus.Fatalf("failed to serve: %v", err)

@@ -15,6 +15,34 @@ import (
 	"time"
 )
 
+func (s *ClientTestSuite) TestSlow() {
+	ct := context.Background()
+	conn, err := grpc.DialContext(ct, *server.ConnAddress, grpc.WithInsecure())
+	if err != nil {
+		logrus.Fatalf("connect server %v", err)
+	}
+	defer func() {
+		if e := conn.Close(); e != nil {
+			logrus.Infof("failed to close connection: %s", e)
+		}
+	}()
+
+	c := pb.NewHelloServiceClient(conn)
+	req := &pb.SlowRequest{
+		Seconds: 10,
+	}
+	logrus.Infof("requesting with %+v", req)
+	r, err := c.Slow(ct, req)
+	if err != nil {
+		st := status.Convert(err)
+		// codes.Unavailable if rpc shutdown or network conn broken
+		logrus.Errorf("error: code: %d message: %s", st.Code(), st.Message())
+	}
+	if r != nil {
+		logrus.Infof("client got msg: %s", r.Msg)
+	}
+}
+
 // call with timeout context
 
 func (s *ClientTestSuite) TestWithCallTimeout() {

@@ -20,7 +20,7 @@ tasks:
     desc: install daily tools
     cmds:
       - task: install-cilint
-      - task: install-grpc
+      - task: install-pb-go-grpc
       - task: install-db-mig
 
   install-cilint:
@@ -32,7 +32,7 @@ tasks:
       - golangci-lint --version
 
   # gRPC https://developers.google.com/protocol-buffers/docs/reference/go-generated
-  install-grpc:
+  install-pb-go-grpc:
     desc: install grpc tools
     status:
       - which protoc-gen-go > /dev/null
@@ -52,6 +52,7 @@ tasks:
     cmds:
       - brew tap bufbuild/buf
       - brew install buf
+    # 注意： buf像prototool一样也不负责管理plugin，如protoc-gen-go，需按install-pb-go-grpc 安装
 
   install-grpcurl:
     desc: install grpcurl

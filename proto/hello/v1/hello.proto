@@ -1,11 +1,11 @@
 syntax = "proto3";
-
 package proto.hello.v1;
-option go_package = "github.com/cao7113/hellogolang/proto/gosdk/proto/hellov1";
+option go_package = "github.com/cao7113/hellogolang/proto/gosdk/hellov1";
 
 service HelloService {
   rpc Hello (HelloRequest) returns (HelloResponse) {}
   rpc TryContext (TryContextRequest) returns (TryContextResponse) {}
+  rpc Slow (SlowRequest) returns (SlowResponse) {}
 }
 
 message HelloRequest {
@@ -27,5 +27,13 @@ message TryContextRequest {
 }
 
 message TryContextResponse {
+  string msg = 1;
+}
+
+message SlowRequest {
+  uint32 seconds = 1;
+}
+
+message SlowResponse {
   string msg = 1;
 }
