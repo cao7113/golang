@@ -1,21 +1,16 @@
 package main
 
 import (
-	"github.com/cao7113/hellogolang/config"
 	"github.com/cao7113/hellogolang/rpc/server"
-	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
-	"runtime"
 )
 
 func main() {
-	runtime.GOMAXPROCS(2)
-
-	tracer.Start(
-		tracer.WithEnv("testing"),
-		tracer.WithService(config.Config.ServiceName),
-		tracer.WithServiceVersion("v0.0.1"),
-	)
-	defer tracer.Stop()
+	//tracer.Start(
+	//	tracer.WithEnv("testing"),
+	//	tracer.WithService(config.Config.ServiceName),
+	//	tracer.WithServiceVersion("v0.0.1"),
+	//)
+	//defer tracer.Stop()
 
 	server.StartRPCServer()
 }

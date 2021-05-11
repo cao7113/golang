@@ -69,6 +69,7 @@ tasks:
   # docker run --volume "$(pwd):/workspace" --workdir "/workspace" bufbuild/buf lint
 
   ## Grpc service
+
   hi:
     desc: try it
     cmds:
@@ -201,21 +202,21 @@ tasks:
     cmds:
       - task: mod-up
     
-  ## docker
+  ## Docker
   dkcom-up:
     cmds:
       - docker-compose up -d
   dk-build:
     cmds:
-      - docker build -t proto-golang-try .
+      - docker build -t hello-golang .
   dk-run:
     deps:
       - dk-build
     cmds:
-      - docker run --rm proto-golang-try
+      - docker run --rm hello-golang
   dk-build-test:
     cmds:
-      - docker build -t proto-golang-test -f Dockerfile.tests .
+      - docker build -t hello-golang:test -f Dockerfile.test .
   dk-test:
     cmds:
       - docker-compose up -d db

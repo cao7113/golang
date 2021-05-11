@@ -23,14 +23,14 @@ var Config EnvConfig
 type EnvConfig struct {
 	AppEnv      string
 	Verbose     bool   `env:"VERBOSE"`
-	ServiceName string `env:"SERVICE_NAME" envDefault:"hi-go"`
+	ServiceName string `env:"SERVICE_NAME" envDefault:"hello-golang"`
 
 	// Settings
-	DbURL string `env:"DATABASE_URL,required"`
+	DbURL string `env:"DATABASE_URL"`
 
 	// DingTalk
 	DingdingURL   string `env:"DINGDING_URL" envDefault:"https://oapi.dingtalk.com/robot/send"`
-	DingdingToken string `env:"DINGDING_TOKEN,required"`
+	DingdingToken string `env:"DINGDING_TOKEN"`
 }
 
 func init() {

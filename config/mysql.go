@@ -1,6 +1,7 @@
 package config
 
 import (
+	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -17,6 +18,10 @@ var Conn *gorm.DB
 // SetupMysql setup conn
 func init() {
 	dsn := Config.DbURL
+	if strings.TrimSpace(dsn) == "" {
+		logrus.Warnf("not set mysql dsn env")
+		return
+	}
 	var err error
 	Conn, err = gorm.Open("mysql", dsn)
 	if err != nil {
