@@ -16,7 +16,7 @@ import (
 	"net"
 )
 
-var ConnAddress = flag.String("ConnAddress", "localhost:50051", "rpc address")
+var ConnAddress = flag.String("ConnAddress", ":50051", "rpc address")
 
 func StartRPCServer() {
 	flag.Parse()

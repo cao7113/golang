@@ -19,9 +19,12 @@ tasks:
     desc: start hello grpc server
     cmds:
       - go run -v rpc/cmd/main.go
+  dk-rpc:
+    desc: run docker rpc
+    cmds:
+      - docker run --rm -p50051:50051 hello-golang
 
   # pb-grpc
-
   g:
     cmds:
       - |
@@ -201,7 +204,7 @@ tasks:
   get:
     cmds:
       - task: mod-up
-    
+
   ## Docker
   dkcom-up:
     cmds:
