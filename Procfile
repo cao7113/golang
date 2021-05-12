@@ -1,0 +1,1 @@
+tools: kubectl port-forward svc/realm-cia-tools 50051:50051 -n cia
