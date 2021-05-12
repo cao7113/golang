@@ -23,6 +23,21 @@ tasks:
     desc: run docker rpc
     cmds:
       - docker run --rm -p50051:50051 hello-golang
+  rpc-list:
+    desc: list rpc service
+    cmds:
+      - grpcurl -plaintext localhost:50051 list
+      # - grpcurl -plaintext localhost:50051 describe proto.hello.v1.HelloService
+  ping:
+    cmds:
+      - grpcurl -plaintext localhost:50051 proto.ping.v1.PingService.Ping
+      # - grpcurl -plaintext -d '{"from": "cli-test"}' localhost:50051 proto.ping.v1.PingService.Ping
+      - |
+        grpcurl -plaintext -d @ localhost:50051 proto.ping.v1.PingService.Ping <<-EOM | jq
+          {
+             "from": "console"
+          }
+        EOM
 
   # pb-grpc
   g:

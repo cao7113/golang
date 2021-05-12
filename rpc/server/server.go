@@ -4,7 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	pingv1 "github.com/cao7113/hellogolang/proto/gosdk/proto/ping/v1"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	"google.golang.org/grpc/reflection"
 	//grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	pb "github.com/cao7113/hellogolang/proto/gosdk/proto/hello/v1"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
@@ -30,8 +32,11 @@ func StartRPCServer() {
 	var opts []grpc.ServerOption
 	opts = setupMiddlewares(opts)
 	s := grpc.NewServer(opts...)
-	svr := &HelloServer{}
-	pb.RegisterHelloServiceServer(s, svr)
+	pb.RegisterHelloServiceServer(s, &HelloServer{})
+	pingv1.RegisterPingServiceServer(s, &PingServer{})
+
+	// Register reflection service on gRPC server.
+	reflection.Register(s)
 
 	// todo graceful shutdown!!! todo
 	logrus.Infof("running grpc server at %s", address)

@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
-	pb "github.com/cao7113/hellogolang/proto/gosdk/proto/hello/v1"
+	hellov1 "github.com/cao7113/hellogolang/proto/gosdk/proto/hello/v1"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -11,19 +11,19 @@ import (
 )
 
 type HelloServer struct {
-	pb.UnimplementedHelloServiceServer
+	hellov1.UnimplementedHelloServiceServer
 }
 
-func (h HelloServer) Slow(ctx context.Context, req *pb.SlowRequest) (*pb.SlowResponse, error) {
+func (h HelloServer) Slow(ctx context.Context, req *hellov1.SlowRequest) (*hellov1.SlowResponse, error) {
 	logrus.Infof("[server] requesting with %+v", req)
 	time.Sleep(time.Duration(req.Seconds) * time.Second)
-	resp := &pb.SlowResponse{
+	resp := &hellov1.SlowResponse{
 		Msg: fmt.Sprintf("slow reply after %d seconds", req.Seconds),
 	}
 	return resp, nil
 }
 
-func (h HelloServer) TryContext(ctx context.Context, req *pb.TryContextRequest) (*pb.TryContextResponse, error) {
+func (h HelloServer) TryContext(ctx context.Context, req *hellov1.TryContextRequest) (*hellov1.TryContextResponse, error) {
 	dt, ok := ctx.Deadline()
 	if ok {
 		logrus.Infof("request %+v with deadline: %s", req, dt)
@@ -39,7 +39,7 @@ func (h HelloServer) TryContext(ctx context.Context, req *pb.TryContextRequest) 
 		logrus.Infof("%s requesting from: %s count: %+v fibN: %d", time.Now().Format(time.RFC3339), req.From, i, n)
 		i++
 	}
-	rp := &pb.TryContextResponse{
+	rp := &hellov1.TryContextResponse{
 		Msg: fmt.Sprintf("response from server for from: %s", req.From),
 	}
 	return rp, nil
@@ -52,13 +52,13 @@ func fibN(n int) int {
 	return fibN(n-1) + fibN(n-2)
 }
 
-func (h HelloServer) Hello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
+func (h HelloServer) Hello(ctx context.Context, req *hellov1.HelloRequest) (*hellov1.HelloResponse, error) {
 	logrus.Infof("handling request: %+v", req)
 	switch req.Error {
 	case "error":
 		st := status.New(codes.FailedPrecondition, "failed to satisfy pre-conditions")
 		ds, err := st.WithDetails(
-			&pb.Error{
+			&hellov1.Error{
 				Code:    int64(123),
 				Message: "mock error code",
 			},
@@ -68,7 +68,7 @@ func (h HelloServer) Hello(ctx context.Context, req *pb.HelloRequest) (*pb.Hello
 		}
 		return nil, ds.Err()
 	}
-	reply := &pb.HelloResponse{
+	reply := &hellov1.HelloResponse{
 		Message: fmt.Sprintf("hi %s", req.Name),
 	}
 	return reply, nil
