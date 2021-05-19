@@ -26,7 +26,7 @@ func StartRPCServer() {
 	address := *ConnAddress
 	lis, err := net.Listen("tcp", address)
 	if err != nil {
-		logrus.Fatalf("failed to listen: %v", err)
+		logrus.Fatalf("failed to listen addr %s with error: %v", address, err)
 	}
 
 	var opts []grpc.ServerOption
@@ -71,6 +71,5 @@ var panicFunc = func(ctx context.Context, p interface{}) (err error) {
 	//}
 
 	logrus.Error(wrappedError)
-
 	return status.Error(codes.Internal, "Internal Error")
 }

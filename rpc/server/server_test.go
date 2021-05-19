@@ -1,10 +1,9 @@
-package rpc
+package server
 
 import (
 	"context"
 	"fmt"
 	pb "github.com/cao7113/hellogolang/proto/gosdk/proto/hello/v1"
-	"github.com/cao7113/hellogolang/rpc/server"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc"
@@ -15,9 +14,44 @@ import (
 	"time"
 )
 
-func (s *ClientTestSuite) TestSlow() {
+func (s *ServerTestSuite) TestTryTimeout() {
 	ct := context.Background()
-	conn, err := grpc.DialContext(ct, *server.ConnAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(ct, *ConnAddress, grpc.WithInsecure())
+	if err != nil {
+		logrus.Fatalf("connect server %v", err)
+	}
+	defer func() {
+		if e := conn.Close(); e != nil {
+			logrus.Infof("failed to close connection: %s", e)
+		}
+	}()
+
+	c := pb.NewHelloServiceClient(conn)
+	req := &pb.TryTimeoutRequest{
+		TimeoutInMs: 210,
+	}
+	logrus.Infof("[client] requesting with %+v", req)
+
+	reqCt, cancel := context.WithTimeout(ct, time.Duration(req.TimeoutInMs)*time.Millisecond)
+	go func() {
+		time.Sleep(350 * time.Millisecond)
+		logrus.Infof("client cancel request")
+		cancel()
+	}()
+	r, err := c.TryTimeout(reqCt, req)
+	if err != nil {
+		st := status.Convert(err)
+		// codes.Unavailable if rpc shutdown or network conn broken
+		logrus.Errorf("error: code: %d message: %s", st.Code(), st.Message())
+	}
+	if r != nil {
+		logrus.Infof("client got msg: %s", r.Msg)
+	}
+}
+
+func (s *ServerTestSuite) TestSlow() {
+	ct := context.Background()
+	conn, err := grpc.DialContext(ct, *ConnAddress, grpc.WithInsecure())
 	if err != nil {
 		logrus.Fatalf("connect server %v", err)
 	}
@@ -45,11 +79,11 @@ func (s *ClientTestSuite) TestSlow() {
 
 // call with timeout context
 
-func (s *ClientTestSuite) TestWithCallTimeout() {
+func (s *ServerTestSuite) TestWithCallTimeout() {
 	ct := context.Background()
 	bct, cancel := context.WithTimeout(ct, 3*time.Second)
 	defer cancel()
-	conn, err := grpc.DialContext(bct, *server.ConnAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(bct, *ConnAddress, grpc.WithInsecure())
 	if err != nil {
 		logrus.Fatalf("connect server %v", err)
 	}
@@ -89,11 +123,11 @@ func (s *ClientTestSuite) TestWithCallTimeout() {
 	logrus.Infof("over")
 }
 
-func (s *ClientTestSuite) TestWithTimeout() {
+func (s *ServerTestSuite) TestWithTimeout() {
 	ct := context.Background()
 	bct, cancel := context.WithTimeout(ct, 3*time.Second)
 	defer cancel()
-	conn, err := grpc.DialContext(bct, *server.ConnAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(bct, *ConnAddress, grpc.WithInsecure())
 	if err != nil {
 		logrus.Fatalf("connect server %v", err)
 	}
@@ -131,11 +165,11 @@ func (s *ClientTestSuite) TestWithTimeout() {
 	logrus.Infof("over")
 }
 
-func (s *ClientTestSuite) TestWithTimeout1() {
+func (s *ServerTestSuite) TestWithTimeout1() {
 	ct := context.Background()
 	bct, cancel := context.WithTimeout(ct, 2*time.Second)
 	defer cancel()
-	conn, err := grpc.DialContext(bct, *server.ConnAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(bct, *ConnAddress, grpc.WithInsecure())
 	if err != nil {
 		logrus.Fatalf("connect server %v", err)
 	}
@@ -175,8 +209,8 @@ func (s *ClientTestSuite) TestWithTimeout1() {
 	logrus.Infof("over")
 }
 
-func (s *ClientTestSuite) TestAllWithoutTimeout() {
-	conn, err := grpc.Dial(*server.ConnAddress, grpc.WithInsecure())
+func (s *ServerTestSuite) TestAllWithoutTimeout() {
+	conn, err := grpc.Dial(*ConnAddress, grpc.WithInsecure())
 	if err != nil {
 		logrus.Fatalf("connect server %v", err)
 	}
@@ -213,7 +247,7 @@ func (s *ClientTestSuite) TestAllWithoutTimeout() {
 	logrus.Infof("over")
 }
 
-func (s *ClientTestSuite) TestStatusCode() {
+func (s *ServerTestSuite) TestStatusCode() {
 	reason := "testing"
 	err := status.Errorf(codes.FailedPrecondition, "failed precondition %s", reason)
 
@@ -224,8 +258,8 @@ func (s *ClientTestSuite) TestStatusCode() {
 	logrus.Infof("msg: %s, code: %v, str: %s", err1.Message(), err1.Code(), err1.Code().String())
 }
 
-func (s *ClientTestSuite) TestDetailError() {
-	conn, err := grpc.Dial(*server.ConnAddress, grpc.WithInsecure())
+func (s *ServerTestSuite) TestDetailError() {
+	conn, err := grpc.Dial(*ConnAddress, grpc.WithInsecure())
 	if err != nil {
 		logrus.Fatalf("connect server %v", err)
 	}
@@ -258,21 +292,21 @@ func (s *ClientTestSuite) TestDetailError() {
 	logrus.Errorf("proto error: %+v", err)
 }
 
-type ClientTestSuite struct {
+type ServerTestSuite struct {
 	suite.Suite
 }
 
 // The SetupSuite method will be run before any tests are run.
-func (s *ClientTestSuite) SetupSuite() {
+func (s *ServerTestSuite) SetupSuite() {
 	runtime.GOMAXPROCS(2)
-	go server.StartRPCServer()
+	go StartRPCServer()
 	time.Sleep(1 * time.Second)
 }
 
 // The TearDownSuite method will be run after all tests have been run.
-func (s *ClientTestSuite) TearDownSuite() {
+func (s *ServerTestSuite) TearDownSuite() {
 }
 
 func TestClientRequests(t *testing.T) {
-	suite.Run(t, new(ClientTestSuite))
+	suite.Run(t, new(ServerTestSuite))
 }

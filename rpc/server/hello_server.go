@@ -14,6 +14,24 @@ type HelloServer struct {
 	hellov1.UnimplementedHelloServiceServer
 }
 
+func (h HelloServer) TryTimeout(ctx context.Context, req *hellov1.TryTimeoutRequest) (*hellov1.TryTimeoutResponse, error) {
+	logrus.Infof("[server] handling request with %+v", req)
+	t0 := time.Now()
+	i := 0
+	for { // 检测超时
+		i++
+		if ctx.Err() == context.Canceled {
+			logrus.Warnf("hit cancelled after %d loop", i)
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+	resp := &hellov1.TryTimeoutResponse{
+		Msg: fmt.Sprintf("try-timeout reply after %d ms", time.Since(t0).Milliseconds()),
+	}
+	return resp, nil
+}
+
 func (h HelloServer) Slow(ctx context.Context, req *hellov1.SlowRequest) (*hellov1.SlowResponse, error) {
 	logrus.Infof("[server] requesting with %+v", req)
 	time.Sleep(time.Duration(req.Seconds) * time.Second)

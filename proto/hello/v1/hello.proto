@@ -4,8 +4,9 @@ option go_package = "github.com/cao7113/hellogolang/proto/gosdk/hellov1";
 
 service HelloService {
   rpc Hello (HelloRequest) returns (HelloResponse) {}
-  rpc TryContext (TryContextRequest) returns (TryContextResponse) {}
   rpc Slow (SlowRequest) returns (SlowResponse) {}
+  rpc TryContext (TryContextRequest) returns (TryContextResponse) {}
+  rpc TryTimeout(TryTimeoutRequest) returns (TryTimeoutResponse){}
 }
 
 message HelloRequest {
@@ -22,6 +23,14 @@ message Error {
   string message = 2;
 }
 
+message SlowRequest {
+  uint32 seconds = 1;
+}
+
+message SlowResponse {
+  string msg = 1;
+}
+
 message TryContextRequest {
   string from = 1;
 }
@@ -30,10 +39,10 @@ message TryContextResponse {
   string msg = 1;
 }
 
-message SlowRequest {
-  uint32 seconds = 1;
+message TryTimeoutRequest {
+  uint32 timeout_in_ms = 1;
 }
 
-message SlowResponse {
+message TryTimeoutResponse {
   string msg = 1;
 }
