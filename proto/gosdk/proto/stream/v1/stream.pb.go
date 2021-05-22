@@ -194,7 +194,7 @@ type ClientStreamResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
-	// actually got message count
+	// actually got message count in service-side
 	MsgCount int32 `protobuf:"varint,2,opt,name=msg_count,json=msgCount,proto3" json:"msg_count,omitempty"`
 }
 

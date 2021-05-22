@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StreamServiceClient interface {
-	// server stream
+	// Hi is server stream
 	Hi(ctx context.Context, in *HiRequest, opts ...grpc.CallOption) (StreamService_HiClient, error)
 	ClientStream(ctx context.Context, opts ...grpc.CallOption) (StreamService_ClientStreamClient, error)
 	BiStream(ctx context.Context, opts ...grpc.CallOption) (StreamService_BiStreamClient, error)
@@ -133,7 +133,7 @@ func (x *streamServiceBiStreamClient) Recv() (*BiStreamResponse, error) {
 // All implementations must embed UnimplementedStreamServiceServer
 // for forward compatibility
 type StreamServiceServer interface {
-	// server stream
+	// Hi is server stream
 	Hi(*HiRequest, StreamService_HiServer) error
 	ClientStream(StreamService_ClientStreamServer) error
 	BiStream(StreamService_BiStreamServer) error

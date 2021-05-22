@@ -3,7 +3,7 @@ package proto.stream.v1;
 option go_package = "github.com/cao7113/hellogolang/proto/gosdk/streamv1";
 
 service StreamService {
-  // server stream
+  // Hi is server stream
   rpc Hi(HiRequest) returns (stream HiResponse);
   rpc ClientStream(stream ClientStreamRequest) returns (ClientStreamResponse);
   rpc BiStream(stream BiStreamRequest) returns (stream BiStreamResponse);
@@ -29,7 +29,7 @@ message ClientStreamRequest{
 
 message ClientStreamResponse {
   string message = 1;
-  // actually got message count
+  // actually got message count in service-side
   int32 msg_count = 2;
 }
 

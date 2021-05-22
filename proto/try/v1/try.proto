@@ -1,0 +1,70 @@
+syntax = "proto3";
+package proto.try.v1;
+option go_package = "github.com/cao7113/hellogolang/proto/gosdk/tryv1";
+
+service TryService {
+  rpc Try (TryRequest) returns (TryResponse);
+  rpc Context (ContextRequest) returns (ContextResponse);
+  rpc Timeout(TimeoutRequest) returns (TimeoutResponse);
+  rpc Slow (SlowRequest) returns (SlowResponse);
+  rpc Code (CodeRequest) returns (CodeResponse);
+  rpc Fatal (FatalRequest) returns (FatalResponse);
+}
+
+message TryRequest {
+  string name = 1;
+  uint32 score = 2;
+  oneof gender {
+    bool male = 3;
+    bool female = 4;
+  }
+}
+
+message TryResponse {
+  string message = 1;
+}
+
+message Error {
+  int64 code = 1;
+  string message = 2;
+}
+
+message ContextRequest {
+  string from = 1;
+}
+
+message ContextResponse {
+  string msg = 1;
+}
+
+message TimeoutRequest {
+  uint32 timeout_in_ms = 1;
+}
+
+message TimeoutResponse {
+  string msg = 1;
+}
+
+message SlowRequest {
+  uint32 seconds = 1;
+}
+
+message SlowResponse {
+  string msg = 1;
+}
+
+message CodeRequest {
+
+}
+
+message CodeResponse {
+
+}
+
+message FatalRequest {
+
+}
+
+message FatalResponse {
+
+}

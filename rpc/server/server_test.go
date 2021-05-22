@@ -13,11 +13,11 @@ func (s *ServerTestSuite) TestStatusCode() {
 	reason := "testing"
 	err := status.Errorf(codes.FailedPrecondition, "failed precondition %s", reason)
 
-	err1, ok := status.FromError(err)
+	stErr, ok := status.FromError(err)
 	s.True(ok)
-	s.Equal(codes.FailedPrecondition, err1.Code())
-	// "msg: failed precondition testing, code: FailedPrecondition, str: FailedPrecondition"
-	logrus.Infof("msg: %s, code: %v, str: %s", err1.Message(), err1.Code(), err1.Code().String())
+	s.Equal(codes.FailedPrecondition, stErr.Code())
+	// "message: failed precondition testing with code: FailedPrecondition"
+	logrus.Infof("message: %s with code: %v", stErr.Message(), stErr.Code())
 }
 
 func TestServerTestSuite(t *testing.T) {

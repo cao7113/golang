@@ -3,14 +3,16 @@ package server
 import (
 	"context"
 	"fmt"
-	pb "github.com/cao7113/hellogolang/proto/gosdk/proto/hello/v1"
+	"github.com/cao7113/hellogolang/proto/gosdk/proto/try/v1"
 	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
+	"testing"
 	"time"
 )
 
-func (s *ServerTestSuite) TestTry() {
+func (s *TryTestSuite) TestTry() {
 	ct := context.Background()
 	conn, err := grpc.DialContext(ct, *ConnAddress, grpc.WithInsecure())
 	if err != nil {
@@ -18,11 +20,11 @@ func (s *ServerTestSuite) TestTry() {
 	}
 	defer conn.Close()
 
-	c := pb.NewHelloServiceClient(conn)
-	req := &pb.TryRequest{
+	c := tryv1.NewTryServiceClient(conn)
+	req := &tryv1.TryRequest{
 		Name:  "Geek",
 		Score: uint32(99),
-		Gender: &pb.TryRequest_Male{
+		Gender: &tryv1.TryRequest_Male{
 			Male: true,
 		},
 	}
@@ -31,14 +33,36 @@ func (s *ServerTestSuite) TestTry() {
 	if err != nil {
 		st := status.Convert(err)
 		// codes.Unavailable if rpc shutdown or network conn broken
-		logrus.Errorf("error: code: %d message: %s", st.Code(), st.Message())
+		logrus.Errorf("error: code: %v message: %s", st.Code(), st.Message())
 	}
 	if r != nil {
 		logrus.Infof("client got msg: %s", r.Message)
 	}
 }
 
-func (s *ServerTestSuite) TestSlow() {
+func (s *TryTestSuite) TestFatal() {
+	ct := context.Background()
+	conn, err := grpc.DialContext(ct, *ConnAddress, grpc.WithInsecure())
+	if err != nil {
+		logrus.Fatalf("connect server %v", err)
+	}
+	defer conn.Close()
+	c := tryv1.NewTryServiceClient(conn)
+
+	req := &tryv1.FatalRequest{}
+	logrus.Infof("[client] requesting with %+v", req)
+	r, err := c.Fatal(ct, req)
+	if err != nil {
+		st := status.Convert(err)
+		// codes.Unavailable if rpc shutdown or network conn broken
+		logrus.Errorf("error: code: %v message: %s", st.Code(), st.Message())
+	}
+	if r != nil {
+		logrus.Infof("client got response: %+v", r)
+	}
+}
+
+func (s *TryTestSuite) TestSlow() {
 	ct := context.Background()
 	conn, err := grpc.DialContext(ct, *ConnAddress, grpc.WithInsecure())
 	if err != nil {
@@ -46,8 +70,8 @@ func (s *ServerTestSuite) TestSlow() {
 	}
 	defer conn.Close()
 
-	c := pb.NewHelloServiceClient(conn)
-	req := &pb.SlowRequest{
+	c := tryv1.NewTryServiceClient(conn)
+	req := &tryv1.SlowRequest{
 		Seconds: 10,
 	}
 	logrus.Infof("[client] requesting with %+v", req)
@@ -62,7 +86,7 @@ func (s *ServerTestSuite) TestSlow() {
 	}
 }
 
-func (s *ServerTestSuite) TestTryTimeout() {
+func (s *TryTestSuite) TestTryTimeout() {
 	ct := context.Background()
 	conn, err := grpc.DialContext(ct, *ConnAddress, grpc.WithInsecure())
 	if err != nil {
@@ -74,8 +98,8 @@ func (s *ServerTestSuite) TestTryTimeout() {
 		}
 	}()
 
-	c := pb.NewHelloServiceClient(conn)
-	req := &pb.TryTimeoutRequest{
+	c := tryv1.NewTryServiceClient(conn)
+	req := &tryv1.TimeoutRequest{
 		TimeoutInMs: 210,
 	}
 	logrus.Infof("[client] requesting with %+v", req)
@@ -86,7 +110,7 @@ func (s *ServerTestSuite) TestTryTimeout() {
 		logrus.Infof("client cancel request")
 		cancel()
 	}()
-	r, err := c.TryTimeout(reqCt, req)
+	r, err := c.Timeout(reqCt, req)
 	if err != nil {
 		st := status.Convert(err)
 		// codes.Unavailable if rpc shutdown or network conn broken
@@ -99,7 +123,7 @@ func (s *ServerTestSuite) TestTryTimeout() {
 
 // call with timeout context
 
-func (s *ServerTestSuite) TestWithCallTimeout() {
+func (s *TryTestSuite) TestWithCallTimeout() {
 	ct := context.Background()
 	bct, cancel := context.WithTimeout(ct, 3*time.Second)
 	defer cancel()
@@ -121,13 +145,13 @@ func (s *ServerTestSuite) TestWithCallTimeout() {
 				ctx := context.Background()
 				ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 				defer cancel()
-				c := pb.NewHelloServiceClient(conn)
+				c := tryv1.NewTryServiceClient(conn)
 				from := fmt.Sprintf("sub-%d-%d", i, j)
-				req := &pb.TryContextRequest{
+				req := &tryv1.ContextRequest{
 					From: from,
 				}
 				logrus.Infof("client request with from %s", from)
-				r, err := c.TryContext(ctx, req)
+				r, err := c.Context(ctx, req)
 				if err != nil {
 					st := status.Convert(err)
 					logrus.Errorf("from: %s error: code: %d message: %s", from, st.Code(), st.Message())
@@ -143,7 +167,7 @@ func (s *ServerTestSuite) TestWithCallTimeout() {
 	logrus.Infof("over")
 }
 
-func (s *ServerTestSuite) TestWithTimeout() {
+func (s *TryTestSuite) TestWithTimeout() {
 	ct := context.Background()
 	bct, cancel := context.WithTimeout(ct, 3*time.Second)
 	defer cancel()
@@ -163,13 +187,13 @@ func (s *ServerTestSuite) TestWithTimeout() {
 			//time.Sleep(1 * time.Millisecond)
 			go func(i, j int) {
 				ctx := context.Background()
-				c := pb.NewHelloServiceClient(conn)
+				c := tryv1.NewTryServiceClient(conn)
 				from := fmt.Sprintf("sub-%d-%d", i, j)
-				req := &pb.TryContextRequest{
+				req := &tryv1.ContextRequest{
 					From: from,
 				}
 				logrus.Infof("client request with from %s", from)
-				r, err := c.TryContext(ctx, req)
+				r, err := c.Context(ctx, req)
 				if err != nil {
 					st := status.Convert(err)
 					logrus.Errorf("from: %s error: code: %d message: %s", from, st.Code(), st.Message())
@@ -185,7 +209,7 @@ func (s *ServerTestSuite) TestWithTimeout() {
 	logrus.Infof("over")
 }
 
-func (s *ServerTestSuite) TestWithTimeout1() {
+func (s *TryTestSuite) TestWithTimeout1() {
 	ct := context.Background()
 	bct, cancel := context.WithTimeout(ct, 2*time.Second)
 	defer cancel()
@@ -203,17 +227,17 @@ func (s *ServerTestSuite) TestWithTimeout1() {
 
 	//ctx := context.Background()
 	ctx := bct
-	c := pb.NewHelloServiceClient(conn)
+	c := tryv1.NewTryServiceClient(conn)
 	for i := 0; i < 1; i++ {
 		for j := 0; j < 1; j++ {
 			//time.Sleep(1 * time.Millisecond)
 			go func(i, j int) {
 				from := fmt.Sprintf("sub-%d-%d", i, j)
-				req := &pb.TryContextRequest{
+				req := &tryv1.ContextRequest{
 					From: from,
 				}
 				logrus.Infof("client request with from %s", from)
-				r, err := c.TryContext(ctx, req)
+				r, err := c.Context(ctx, req)
 				if err != nil {
 					st := status.Convert(err)
 					logrus.Errorf("from: %s error: code: %d message: %s", from, st.Code(), st.Message())
@@ -229,7 +253,7 @@ func (s *ServerTestSuite) TestWithTimeout1() {
 	logrus.Infof("over")
 }
 
-func (s *ServerTestSuite) TestAllWithoutTimeout() {
+func (s *TryTestSuite) TestAllWithoutTimeout() {
 	conn, err := grpc.Dial(*ConnAddress, grpc.WithInsecure())
 	if err != nil {
 		logrus.Fatalf("connect server %v", err)
@@ -245,13 +269,13 @@ func (s *ServerTestSuite) TestAllWithoutTimeout() {
 			//time.Sleep(1 * time.Millisecond)
 			go func(i, j int) {
 				ctx := context.Background()
-				c := pb.NewHelloServiceClient(conn)
+				c := tryv1.NewTryServiceClient(conn)
 				from := fmt.Sprintf("sub-%d-%d", i, j)
-				req := &pb.TryContextRequest{
+				req := &tryv1.ContextRequest{
 					From: from,
 				}
 				logrus.Infof("client request with from %s", from)
-				r, err := c.TryContext(ctx, req)
+				r, err := c.Context(ctx, req)
 				if err != nil {
 					st := status.Convert(err)
 					logrus.Errorf("from: %s error: code: %d message: %s", from, st.Code(), st.Message())
@@ -267,36 +291,57 @@ func (s *ServerTestSuite) TestAllWithoutTimeout() {
 	logrus.Infof("over")
 }
 
-func (s *ServerTestSuite) TestDetailError() {
-	conn, err := grpc.Dial(*ConnAddress, grpc.WithInsecure())
-	if err != nil {
-		logrus.Fatalf("connect server %v", err)
-	}
-	defer func() {
-		if e := conn.Close(); e != nil {
-			logrus.Infof("failed to close connection: %s", e)
-		}
-	}()
+//func (s *TryTestSuite) TestDetailError() {
+//	conn, err := grpc.Dial(*ConnAddress, grpc.WithInsecure())
+//	if err != nil {
+//		logrus.Fatalf("connect server %v", err)
+//	}
+//	defer func() {
+//		if e := conn.Close(); e != nil {
+//			logrus.Infof("failed to close connection: %s", e)
+//		}
+//	}()
+//
+//	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+//	defer cancel()
+//
+//	c := tryv1.NewTryServiceClient(conn)
+//	req := &tryv1.HelloRequest{
+//		Name:  "try",
+//		Error: "error",
+//	}
+//	r, err := c.Hello(ctx, req)
+//	s.Nil(r)
+//	s.NotNil(err)
+//	se := status.Convert(err)
+//	for _, d := range se.Details() {
+//		switch info := d.(type) {
+//		case *tryv1.Error:
+//			logrus.Infof("hit mock error: %+v", info)
+//		default:
+//			logrus.Fatalf("Unexpected type: %s", info)
+//		}
+//	}
+//	logrus.Errorf("proto error: %+v", err)
+//}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
+func TestTryTestSuite(t *testing.T) {
+	suite.Run(t, new(TryTestSuite))
+}
 
-	c := pb.NewHelloServiceClient(conn)
-	req := &pb.HelloRequest{
-		Name:  "try",
-		Error: "error",
-	}
-	r, err := c.Hello(ctx, req)
-	s.Nil(r)
-	s.NotNil(err)
-	se := status.Convert(err)
-	for _, d := range se.Details() {
-		switch info := d.(type) {
-		case *pb.Error:
-			logrus.Infof("hit mock error: %+v", info)
-		default:
-			logrus.Fatalf("Unexpected type: %s", info)
-		}
-	}
-	logrus.Errorf("proto error: %+v", err)
+type TryTestSuite struct {
+	suite.Suite
+}
+
+// The SetupSuite method will be run before any tests are run.
+func (s *TryTestSuite) SetupSuite() {
+}
+
+// The TearDownSuite method will be run after all tests have been run.
+func (s *TryTestSuite) TearDownSuite() {
+}
+
+func asyncStartRPC() {
+	go StartRPCServer()
+	time.Sleep(20 * time.Millisecond)
 }
