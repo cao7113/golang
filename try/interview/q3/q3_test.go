@@ -9,7 +9,7 @@ type People struct{}
 
 func (p *People) ShowA() {
 	fmt.Println("showA")
-    p.ShowB()
+	p.ShowB()
 }
 func (p *People) ShowB() {
 	fmt.Println("showB")

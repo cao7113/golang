@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	pingv1 "github.com/cao7113/hellogolang/proto/gosdk/proto/ping/v1"
+	streamv1 "github.com/cao7113/hellogolang/proto/gosdk/proto/stream/v1"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc/reflection"
 	//grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -28,12 +29,14 @@ func StartRPCServer() {
 	if err != nil {
 		logrus.Fatalf("failed to listen addr %s with error: %v", address, err)
 	}
+	defer lis.Close()
 
 	var opts []grpc.ServerOption
 	opts = setupMiddlewares(opts)
 	s := grpc.NewServer(opts...)
 	pb.RegisterHelloServiceServer(s, &HelloServer{})
 	pingv1.RegisterPingServiceServer(s, &PingServer{})
+	streamv1.RegisterStreamServiceServer(s, &StreamServer{})
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)

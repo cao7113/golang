@@ -1,4 +1,5 @@
 package dingtalk
+
 //go:generate mockgen -destination=./mock/dingtalk_sender_mock.go github.com/cao7113/hellogolang/chatops/dingtalk Sender
 import (
 	"bytes"
