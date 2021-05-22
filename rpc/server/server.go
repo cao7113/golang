@@ -44,7 +44,7 @@ func StartRPCServer() {
 	// todo graceful shutdown!!! todo
 	logrus.Infof("running grpc server at %s", address)
 	if err := s.Serve(lis); err != nil {
-		logrus.Fatalf("failed to serve: %v", err)
+		logrus.Fatalf("Serve() failed: %v", err)
 	}
 }
 
