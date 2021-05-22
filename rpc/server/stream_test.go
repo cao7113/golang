@@ -103,7 +103,7 @@ func (s *StreamTestSuite) TestBiStream() {
 
 	// push messages
 	go func() {
-		cnt := 3
+		cnt := 7
 		for i := 0; i < cnt; i++ {
 			req := &streamv1.BiStreamRequest{
 				From:  "testing",
@@ -114,6 +114,7 @@ func (s *StreamTestSuite) TestBiStream() {
 				logrus.Fatalf("Send() error: %s", err.Error())
 			}
 			logrus.Infof("[client] sent msg: %+v", req)
+			time.Sleep(50 * time.Millisecond)
 		}
 	}()
 
@@ -131,7 +132,7 @@ func (s *StreamTestSuite) TestBiStream() {
 		}
 	}()
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	//select {}
 }
 

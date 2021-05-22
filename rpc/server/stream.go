@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 	"io"
 	"sync"
+	"time"
 )
 
 type StreamServer struct {
@@ -49,6 +50,42 @@ func (s StreamServer) ClientStream(cs streamv1.StreamService_ClientStreamServer)
 }
 
 func (s StreamServer) BiStream(svr streamv1.StreamService_BiStreamServer) error {
+	// 应该设置超时时间，防止过长不活跃连接 长期占用系统资源
+
+	// first put a WELCOME message
+	wMsg := fmt.Sprintf("Welcome %s", time.Now().Format(time.RFC3339))
+	svr.Send(&streamv1.BiStreamResponse{Message: wMsg})
+
+	cnt := 0
+	for {
+		logrus.Infof("[server] waiting count: %d", cnt)
+		bsr, err := svr.Recv()
+		if err != nil {
+			if !errors.Is(err, io.EOF) {
+				logrus.Errorf("[server] Recv() unexecpted error: %s", err.Error())
+			}
+			break
+		}
+		logrus.Infof("[server] got %d from idx=%d request: %+v", cnt, bsr.Index, bsr)
+		cIdx := bsr.Index
+		if cIdx%2 == 0 {
+			magic := cIdx * cIdx
+			bResp := &streamv1.BiStreamResponse{
+				Message: fmt.Sprintf("index=%d hit magic: %d", cIdx, magic),
+				Index:   cIdx,
+			}
+			err = svr.Send(bResp)
+			if err != nil {
+				logrus.Errorf("[server] Send() unexecpted error: %s", err.Error())
+			}
+		}
+		cnt++
+	}
+	logrus.Infof("[server] response stream end")
+	return nil
+}
+
+func (s StreamServer) BiStream2(svr streamv1.StreamService_BiStreamServer) error {
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
 
@@ -71,7 +108,6 @@ func (s StreamServer) BiStream(svr streamv1.StreamService_BiStreamServer) error 
 
 	// server stream, push messages
 	go func() {
-		// todo 与收到的消息联动起来 更有趣
 		for i := int32(0); i < 3; i++ {
 			hr := &streamv1.BiStreamResponse{
 				Message: fmt.Sprintf("index=%d response message", i),
