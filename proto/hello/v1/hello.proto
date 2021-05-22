@@ -3,10 +3,11 @@ package proto.hello.v1;
 option go_package = "github.com/cao7113/hellogolang/proto/gosdk/hellov1";
 
 service HelloService {
-  rpc Hello (HelloRequest) returns (HelloResponse) {}
-  rpc Slow (SlowRequest) returns (SlowResponse) {}
-  rpc TryContext (TryContextRequest) returns (TryContextResponse) {}
-  rpc TryTimeout(TryTimeoutRequest) returns (TryTimeoutResponse){}
+  rpc Hello (HelloRequest) returns (HelloResponse);
+  rpc Try(TryRequest) returns (TryResponse);
+  rpc TryContext (TryContextRequest) returns (TryContextResponse);
+  rpc TryTimeout(TryTimeoutRequest) returns (TryTimeoutResponse);
+  rpc Slow (SlowRequest) returns (SlowResponse);
 }
 
 message HelloRequest {
@@ -18,17 +19,22 @@ message HelloResponse {
   string message = 1;
 }
 
+message TryRequest {
+  string name = 1;
+  uint32 score = 2;
+  oneof gender {
+    bool male = 3;
+    bool female = 4;
+  }
+}
+
+message TryResponse {
+  string message = 1;
+}
+
 message Error {
   int64 code = 1;
   string message = 2;
-}
-
-message SlowRequest {
-  uint32 seconds = 1;
-}
-
-message SlowResponse {
-  string msg = 1;
 }
 
 message TryContextRequest {
@@ -44,5 +50,13 @@ message TryTimeoutRequest {
 }
 
 message TryTimeoutResponse {
+  string msg = 1;
+}
+
+message SlowRequest {
+  uint32 seconds = 1;
+}
+
+message SlowResponse {
   string msg = 1;
 }

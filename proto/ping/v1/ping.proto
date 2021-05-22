@@ -3,7 +3,7 @@ package proto.ping.v1;
 option go_package = "github.com/cao7113/hellogolang/proto/gosdk/pingv1";
 
 service PingService {
-  rpc Ping (PingRequest) returns (PingResponse) {}
+  rpc Ping (PingRequest) returns (PingResponse);
 }
 
 message PingRequest {

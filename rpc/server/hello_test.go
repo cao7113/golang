@@ -10,17 +10,41 @@ import (
 	"time"
 )
 
+func (s *ServerTestSuite) TestTry() {
+	ct := context.Background()
+	conn, err := grpc.DialContext(ct, *ConnAddress, grpc.WithInsecure())
+	if err != nil {
+		logrus.Fatalf("connect server %v", err)
+	}
+	defer conn.Close()
+
+	c := pb.NewHelloServiceClient(conn)
+	req := &pb.TryRequest{
+		Name:  "Geek",
+		Score: uint32(99),
+		Gender: &pb.TryRequest_Male{
+			Male: true,
+		},
+	}
+	logrus.Infof("[client] requesting with %+v", req)
+	r, err := c.Try(ct, req)
+	if err != nil {
+		st := status.Convert(err)
+		// codes.Unavailable if rpc shutdown or network conn broken
+		logrus.Errorf("error: code: %d message: %s", st.Code(), st.Message())
+	}
+	if r != nil {
+		logrus.Infof("client got msg: %s", r.Message)
+	}
+}
+
 func (s *ServerTestSuite) TestSlow() {
 	ct := context.Background()
 	conn, err := grpc.DialContext(ct, *ConnAddress, grpc.WithInsecure())
 	if err != nil {
 		logrus.Fatalf("connect server %v", err)
 	}
-	defer func() {
-		if e := conn.Close(); e != nil {
-			logrus.Infof("failed to close connection: %s", e)
-		}
-	}()
+	defer conn.Close()
 
 	c := pb.NewHelloServiceClient(conn)
 	req := &pb.SlowRequest{

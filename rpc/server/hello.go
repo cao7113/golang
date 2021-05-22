@@ -14,6 +14,19 @@ type HelloServer struct {
 	hellov1.UnimplementedHelloServiceServer
 }
 
+func (h HelloServer) Try(ctx context.Context, req *hellov1.TryRequest) (*hellov1.TryResponse, error) {
+	msg := req.Name
+	switch req.Gender.(type) {
+	case *hellov1.TryRequest_Male:
+		msg += " Male"
+	case *hellov1.TryRequest_Female:
+		msg += " Female"
+	}
+	msg += fmt.Sprintf(" Score: %d", req.Score)
+	resp := &hellov1.TryResponse{Message: msg}
+	return resp, nil
+}
+
 func (h HelloServer) TryTimeout(ctx context.Context, req *hellov1.TryTimeoutRequest) (*hellov1.TryTimeoutResponse, error) {
 	logrus.Infof("[server] handling request with %+v", req)
 	t0 := time.Now()

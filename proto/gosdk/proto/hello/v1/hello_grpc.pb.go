@@ -19,9 +19,10 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HelloServiceClient interface {
 	Hello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error)
-	Slow(ctx context.Context, in *SlowRequest, opts ...grpc.CallOption) (*SlowResponse, error)
+	Try(ctx context.Context, in *TryRequest, opts ...grpc.CallOption) (*TryResponse, error)
 	TryContext(ctx context.Context, in *TryContextRequest, opts ...grpc.CallOption) (*TryContextResponse, error)
 	TryTimeout(ctx context.Context, in *TryTimeoutRequest, opts ...grpc.CallOption) (*TryTimeoutResponse, error)
+	Slow(ctx context.Context, in *SlowRequest, opts ...grpc.CallOption) (*SlowResponse, error)
 }
 
 type helloServiceClient struct {
@@ -41,9 +42,9 @@ func (c *helloServiceClient) Hello(ctx context.Context, in *HelloRequest, opts .
 	return out, nil
 }
 
-func (c *helloServiceClient) Slow(ctx context.Context, in *SlowRequest, opts ...grpc.CallOption) (*SlowResponse, error) {
-	out := new(SlowResponse)
-	err := c.cc.Invoke(ctx, "/proto.hello.v1.HelloService/Slow", in, out, opts...)
+func (c *helloServiceClient) Try(ctx context.Context, in *TryRequest, opts ...grpc.CallOption) (*TryResponse, error) {
+	out := new(TryResponse)
+	err := c.cc.Invoke(ctx, "/proto.hello.v1.HelloService/Try", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,14 +69,24 @@ func (c *helloServiceClient) TryTimeout(ctx context.Context, in *TryTimeoutReque
 	return out, nil
 }
 
+func (c *helloServiceClient) Slow(ctx context.Context, in *SlowRequest, opts ...grpc.CallOption) (*SlowResponse, error) {
+	out := new(SlowResponse)
+	err := c.cc.Invoke(ctx, "/proto.hello.v1.HelloService/Slow", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // HelloServiceServer is the server API for HelloService service.
 // All implementations must embed UnimplementedHelloServiceServer
 // for forward compatibility
 type HelloServiceServer interface {
 	Hello(context.Context, *HelloRequest) (*HelloResponse, error)
-	Slow(context.Context, *SlowRequest) (*SlowResponse, error)
+	Try(context.Context, *TryRequest) (*TryResponse, error)
 	TryContext(context.Context, *TryContextRequest) (*TryContextResponse, error)
 	TryTimeout(context.Context, *TryTimeoutRequest) (*TryTimeoutResponse, error)
+	Slow(context.Context, *SlowRequest) (*SlowResponse, error)
 	mustEmbedUnimplementedHelloServiceServer()
 }
 
@@ -86,14 +97,17 @@ type UnimplementedHelloServiceServer struct {
 func (UnimplementedHelloServiceServer) Hello(context.Context, *HelloRequest) (*HelloResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Hello not implemented")
 }
-func (UnimplementedHelloServiceServer) Slow(context.Context, *SlowRequest) (*SlowResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Slow not implemented")
+func (UnimplementedHelloServiceServer) Try(context.Context, *TryRequest) (*TryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Try not implemented")
 }
 func (UnimplementedHelloServiceServer) TryContext(context.Context, *TryContextRequest) (*TryContextResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TryContext not implemented")
 }
 func (UnimplementedHelloServiceServer) TryTimeout(context.Context, *TryTimeoutRequest) (*TryTimeoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TryTimeout not implemented")
+}
+func (UnimplementedHelloServiceServer) Slow(context.Context, *SlowRequest) (*SlowResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Slow not implemented")
 }
 func (UnimplementedHelloServiceServer) mustEmbedUnimplementedHelloServiceServer() {}
 
@@ -126,20 +140,20 @@ func _HelloService_Hello_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _HelloService_Slow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SlowRequest)
+func _HelloService_Try_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(HelloServiceServer).Slow(ctx, in)
+		return srv.(HelloServiceServer).Try(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.hello.v1.HelloService/Slow",
+		FullMethod: "/proto.hello.v1.HelloService/Try",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HelloServiceServer).Slow(ctx, req.(*SlowRequest))
+		return srv.(HelloServiceServer).Try(ctx, req.(*TryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -180,6 +194,24 @@ func _HelloService_TryTimeout_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HelloService_Slow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SlowRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HelloServiceServer).Slow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.hello.v1.HelloService/Slow",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HelloServiceServer).Slow(ctx, req.(*SlowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // HelloService_ServiceDesc is the grpc.ServiceDesc for HelloService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -192,8 +224,8 @@ var HelloService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _HelloService_Hello_Handler,
 		},
 		{
-			MethodName: "Slow",
-			Handler:    _HelloService_Slow_Handler,
+			MethodName: "Try",
+			Handler:    _HelloService_Try_Handler,
 		},
 		{
 			MethodName: "TryContext",
@@ -202,6 +234,10 @@ var HelloService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TryTimeout",
 			Handler:    _HelloService_TryTimeout_Handler,
+		},
+		{
+			MethodName: "Slow",
+			Handler:    _HelloService_Slow_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
