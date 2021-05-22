@@ -13,6 +13,8 @@ import (
 )
 
 func (s *TryTestSuite) TestTry() {
+	asyncStartRPC()
+
 	ct := context.Background()
 	conn, err := grpc.DialContext(ct, *ConnAddress, grpc.WithInsecure())
 	if err != nil {
