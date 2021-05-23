@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc"
@@ -27,11 +28,13 @@ func TestServerTestSuite(t *testing.T) {
 type ServerTestSuite struct {
 	suite.Suite
 	clientConn *grpc.ClientConn
+	ctx context.Context
 }
 
 // The SetupSuite method will be run before any tests are run.
 func (s *ServerTestSuite) SetupSuite() {
 	s.clientConn = clientConnWithLocalServer()
+	s.ctx = context.Background()
 }
 
 // The TearDownSuite method will be run after all tests have been run.

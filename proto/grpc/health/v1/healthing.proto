@@ -1,5 +1,4 @@
 syntax = "proto3";
-
 package grpc.health.v1;
 option go_package = "github.com/cao7113/hellogolang/proto/gosdk/healthv1";
 
