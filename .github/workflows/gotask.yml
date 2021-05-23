@@ -39,4 +39,4 @@ jobs:
       with:
         fetch-depth: 1
     - name: try task
-      run: task proto
+      run: task grpc

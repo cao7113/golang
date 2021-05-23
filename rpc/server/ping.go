@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
-	pingv1 "github.com/cao7113/hellogolang/proto/gosdk/proto/ping/v1"
+	pingv1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/ping/v1"
 	"github.com/sirupsen/logrus"
 	"time"
 )

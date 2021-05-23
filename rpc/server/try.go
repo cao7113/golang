@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/cao7113/hellogolang/proto/gosdk/proto/try/v1"
+	tryv1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/try/v1"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

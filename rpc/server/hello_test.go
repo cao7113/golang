@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	hellov1 "github.com/cao7113/hellogolang/proto/gosdk/proto/hello/v1"
+	hellov1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/hello/v1"
 	"github.com/sirupsen/logrus"
 )
 

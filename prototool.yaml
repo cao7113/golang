@@ -3,7 +3,7 @@
 # If there is a directory name, that directory and all sub-directories will be excluded.
 #excludes:
 #  - path/to/a
-#  - path/to/b/file.proto
+#  - path/to/b/file.grpc
 
 # Protoc directives.
 protoc:
@@ -29,11 +29,11 @@ protoc:
   # List of mappings from relative directory to base package.
   # This affects how packages are generated with create.
   #packages:
-    # This means that a file created "foo.proto" in the current directory will have package "bar".
-    # A file created "a/b/foo.proto" will have package "bar.a.b".
+    # This means that a file created "foo.grpc" in the current directory will have package "bar".
+    # A file created "a/b/foo.grpc" will have package "bar.a.b".
     #- directory: .
     #  name: bar
-    # This means that a file created "idl/code.uber/a/b/c.proto" will have package "uber.a.b".
+    # This means that a file created "idl/code.uber/a/b/c.grpc" will have package "uber.a.b".
     #- directory: idl/code.uber
     #  name: uber
 
@@ -55,8 +55,8 @@ lint:
 #  ignores:
 #    - id: RPC_NAMES_CAMEL_CASE
 #      files:
-#        - path/to/foo.proto
-#        - path/to/bar.proto
+#        - path/to/foo.grpc
+#        - path/to/bar.grpc
 #    - id: SYNTAX_PROTO3
 #      files:
 #        - path/to/dir
@@ -124,8 +124,8 @@ lint:
 
     # Extra modifiers to include with Mfile=package.
 #    extra_modifiers:
-#      google/api/annotations.proto: google.golang.org/genproto/googleapis/api/annotations
-#      google/api/http.proto: google.golang.org/genproto/googleapis/api/annotations
+#      google/api/annotations.grpc: google.golang.org/genproto/googleapis/api/annotations
+#      google/api/http.grpc: google.golang.org/genproto/googleapis/api/annotations
 
   # The list of plugins.
 #  plugins:
@@ -150,7 +150,7 @@ lint:
       # The path to output generated files to.
       # If the directory does not exist, it will be created when running generation.
       # This needs to be a relative path.
-#      output: ../../.gen/proto/go
+#      output: ../../.gen/grpc/go
 
       # Optional override for the plugin path. For example, if you set set path to
       # /usr/local/bin/gogo_plugin", prototool will add the
@@ -161,14 +161,14 @@ lint:
 
 #    - name: yarpc-go
 #      type: gogo
-#      output: ../../.gen/proto/go
+#      output: ../../.gen/grpc/go
 
 #    - name: grpc-gateway
 #      type: go
-#      output: ../../.gen/proto/go
+#      output: ../../.gen/grpc/go
 
 #    - name: java
-#      output: ../../.gen/proto/java
+#      output: ../../.gen/grpc/java
 
       # Optional file suffix for plugins that output a single file as opposed
       # to writing a set of files to a directory. This is only valid in two
@@ -185,7 +185,7 @@ lint:
       # The include_imports and include_source_info options are not valid for any
       # other plugin name.
 #    - name: descriptor_set
-#      output: ../../.gen/proto/descriptor
+#      output: ../../.gen/grpc/descriptor
 #      file_suffix: bin
 #      include_imports: true
 #      include_source_info: true

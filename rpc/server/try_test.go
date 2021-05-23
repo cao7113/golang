@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	"github.com/cao7113/hellogolang/proto/gosdk/proto/try/v1"
+	tryv1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/try/v1"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"

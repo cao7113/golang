@@ -3,23 +3,22 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/cao7113/hellogolang/proto/gosdk/proto/ping/v1"
-	"github.com/cao7113/hellogolang/proto/gosdk/proto/stream/v1"
-	tryv1 "github.com/cao7113/hellogolang/proto/gosdk/proto/try/v1"
+	healthv1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/health/v1"
+	hellov1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/hello/v1"
+	pingv1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/ping/v1"
+	streamv1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/stream/v1"
+	tryv1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/try/v1"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	"google.golang.org/grpc/reflection"
-	"strconv"
-	"strings"
-
-	//grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	"github.com/cao7113/hellogolang/proto/gosdk/proto/hello/v1"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc"
 	"net"
+	"strconv"
+	"strings"
 )
 
 func StartRPCServer(port int, host string) {
@@ -37,6 +36,7 @@ func StartRPCServer(port int, host string) {
 	pingv1.RegisterPingServiceServer(s, &PingServer{})
 	tryv1.RegisterTryServiceServer(s, &TryServer{})
 	streamv1.RegisterStreamServiceServer(s, &StreamServer{})
+	healthv1.RegisterHealthServer(s, &HealthServer{})
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)

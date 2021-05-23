@@ -9,7 +9,7 @@ vars:
   MYSQL_CLI_OPTS: "-u{{.DB_USER}} "
   #MIG_PATH: datasource/migrate
   MIG_PATH: migrations
-  GOMODNAME: "github.com/cao7113/proto-golang"
+  GOMODNAME: "github.com/cao7113/grpc-golang"
 
 includes:
   os: ./Taskfile_{{OS}}.yml
@@ -27,11 +27,11 @@ tasks:
     desc: list rpc service
     cmds:
       - grpcurl -plaintext localhost:50051 list
-      # - grpcurl -plaintext localhost:50051 describe proto.hello.v1.HelloService
+      # - grpcurl -plaintext localhost:50051 describe grpc.hello.v1.HelloService
   ping:
     cmds:
-      - grpcurl -plaintext localhost:50051 proto.ping.v1.PingService.Ping
-      # - grpcurl -plaintext -d '{"from": "cli-test"}' localhost:50051 proto.ping.v1.PingService.Ping
+      - grpcurl -plaintext localhost:50051 grpc.ping.v1.PingService.Ping
+      # - grpcurl -plaintext -d '{"from": "cli-test"}' localhost:50051 grpc.ping.v1.PingService.Ping
       - |
         grpcurl -plaintext -d @ localhost:50051 proto.ping.v1.PingService.Ping <<-EOM | jq
           {

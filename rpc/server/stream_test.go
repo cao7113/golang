@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"errors"
-	streamv1 "github.com/cao7113/hellogolang/proto/gosdk/proto/stream/v1"
+	streamv1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/stream/v1"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/status"
 	"io"
