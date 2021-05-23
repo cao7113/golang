@@ -19,10 +19,10 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TryServiceClient interface {
 	Try(ctx context.Context, in *TryRequest, opts ...grpc.CallOption) (*TryResponse, error)
-	Context(ctx context.Context, in *ContextRequest, opts ...grpc.CallOption) (*ContextResponse, error)
 	Timeout(ctx context.Context, in *TimeoutRequest, opts ...grpc.CallOption) (*TimeoutResponse, error)
 	Slow(ctx context.Context, in *SlowRequest, opts ...grpc.CallOption) (*SlowResponse, error)
-	Code(ctx context.Context, in *CodeRequest, opts ...grpc.CallOption) (*CodeResponse, error)
+	Fibonacci(ctx context.Context, in *FibonacciRequest, opts ...grpc.CallOption) (*FibonacciResponse, error)
+	DetailError(ctx context.Context, in *DetailErrorRequest, opts ...grpc.CallOption) (*DetailErrorResponse, error)
 	Fatal(ctx context.Context, in *FatalRequest, opts ...grpc.CallOption) (*FatalResponse, error)
 }
 
@@ -37,15 +37,6 @@ func NewTryServiceClient(cc grpc.ClientConnInterface) TryServiceClient {
 func (c *tryServiceClient) Try(ctx context.Context, in *TryRequest, opts ...grpc.CallOption) (*TryResponse, error) {
 	out := new(TryResponse)
 	err := c.cc.Invoke(ctx, "/proto.try.v1.TryService/Try", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *tryServiceClient) Context(ctx context.Context, in *ContextRequest, opts ...grpc.CallOption) (*ContextResponse, error) {
-	out := new(ContextResponse)
-	err := c.cc.Invoke(ctx, "/proto.try.v1.TryService/Context", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,9 +61,18 @@ func (c *tryServiceClient) Slow(ctx context.Context, in *SlowRequest, opts ...gr
 	return out, nil
 }
 
-func (c *tryServiceClient) Code(ctx context.Context, in *CodeRequest, opts ...grpc.CallOption) (*CodeResponse, error) {
-	out := new(CodeResponse)
-	err := c.cc.Invoke(ctx, "/proto.try.v1.TryService/Code", in, out, opts...)
+func (c *tryServiceClient) Fibonacci(ctx context.Context, in *FibonacciRequest, opts ...grpc.CallOption) (*FibonacciResponse, error) {
+	out := new(FibonacciResponse)
+	err := c.cc.Invoke(ctx, "/proto.try.v1.TryService/Fibonacci", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tryServiceClient) DetailError(ctx context.Context, in *DetailErrorRequest, opts ...grpc.CallOption) (*DetailErrorResponse, error) {
+	out := new(DetailErrorResponse)
+	err := c.cc.Invoke(ctx, "/proto.try.v1.TryService/DetailError", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,10 +93,10 @@ func (c *tryServiceClient) Fatal(ctx context.Context, in *FatalRequest, opts ...
 // for forward compatibility
 type TryServiceServer interface {
 	Try(context.Context, *TryRequest) (*TryResponse, error)
-	Context(context.Context, *ContextRequest) (*ContextResponse, error)
 	Timeout(context.Context, *TimeoutRequest) (*TimeoutResponse, error)
 	Slow(context.Context, *SlowRequest) (*SlowResponse, error)
-	Code(context.Context, *CodeRequest) (*CodeResponse, error)
+	Fibonacci(context.Context, *FibonacciRequest) (*FibonacciResponse, error)
+	DetailError(context.Context, *DetailErrorRequest) (*DetailErrorResponse, error)
 	Fatal(context.Context, *FatalRequest) (*FatalResponse, error)
 	mustEmbedUnimplementedTryServiceServer()
 }
@@ -108,17 +108,17 @@ type UnimplementedTryServiceServer struct {
 func (UnimplementedTryServiceServer) Try(context.Context, *TryRequest) (*TryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Try not implemented")
 }
-func (UnimplementedTryServiceServer) Context(context.Context, *ContextRequest) (*ContextResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Context not implemented")
-}
 func (UnimplementedTryServiceServer) Timeout(context.Context, *TimeoutRequest) (*TimeoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Timeout not implemented")
 }
 func (UnimplementedTryServiceServer) Slow(context.Context, *SlowRequest) (*SlowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Slow not implemented")
 }
-func (UnimplementedTryServiceServer) Code(context.Context, *CodeRequest) (*CodeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Code not implemented")
+func (UnimplementedTryServiceServer) Fibonacci(context.Context, *FibonacciRequest) (*FibonacciResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Fibonacci not implemented")
+}
+func (UnimplementedTryServiceServer) DetailError(context.Context, *DetailErrorRequest) (*DetailErrorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DetailError not implemented")
 }
 func (UnimplementedTryServiceServer) Fatal(context.Context, *FatalRequest) (*FatalResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Fatal not implemented")
@@ -150,24 +150,6 @@ func _TryService_Try_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TryServiceServer).Try(ctx, req.(*TryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _TryService_Context_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ContextRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TryServiceServer).Context(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/proto.try.v1.TryService/Context",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TryServiceServer).Context(ctx, req.(*ContextRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -208,20 +190,38 @@ func _TryService_Slow_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TryService_Code_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CodeRequest)
+func _TryService_Fibonacci_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FibonacciRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TryServiceServer).Code(ctx, in)
+		return srv.(TryServiceServer).Fibonacci(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.try.v1.TryService/Code",
+		FullMethod: "/proto.try.v1.TryService/Fibonacci",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TryServiceServer).Code(ctx, req.(*CodeRequest))
+		return srv.(TryServiceServer).Fibonacci(ctx, req.(*FibonacciRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TryService_DetailError_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DetailErrorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TryServiceServer).DetailError(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.try.v1.TryService/DetailError",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TryServiceServer).DetailError(ctx, req.(*DetailErrorRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -256,10 +256,6 @@ var TryService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TryService_Try_Handler,
 		},
 		{
-			MethodName: "Context",
-			Handler:    _TryService_Context_Handler,
-		},
-		{
 			MethodName: "Timeout",
 			Handler:    _TryService_Timeout_Handler,
 		},
@@ -268,8 +264,12 @@ var TryService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TryService_Slow_Handler,
 		},
 		{
-			MethodName: "Code",
-			Handler:    _TryService_Code_Handler,
+			MethodName: "Fibonacci",
+			Handler:    _TryService_Fibonacci_Handler,
+		},
+		{
+			MethodName: "DetailError",
+			Handler:    _TryService_DetailError_Handler,
 		},
 		{
 			MethodName: "Fatal",

@@ -4,10 +4,10 @@ option go_package = "github.com/cao7113/hellogolang/proto/gosdk/tryv1";
 
 service TryService {
   rpc Try (TryRequest) returns (TryResponse);
-  rpc Context (ContextRequest) returns (ContextResponse);
   rpc Timeout(TimeoutRequest) returns (TimeoutResponse);
   rpc Slow (SlowRequest) returns (SlowResponse);
-  rpc Code (CodeRequest) returns (CodeResponse);
+  rpc Fibonacci (FibonacciRequest) returns (FibonacciResponse);
+  rpc DetailError (DetailErrorRequest) returns (DetailErrorResponse);
   rpc Fatal (FatalRequest) returns (FatalResponse);
 }
 
@@ -24,17 +24,14 @@ message TryResponse {
   string message = 1;
 }
 
-message Error {
-  int64 code = 1;
-  string message = 2;
+message FibonacciRequest {
+  uint64 n = 1;
+  string from = 2;
 }
 
-message ContextRequest {
-  string from = 1;
-}
-
-message ContextResponse {
-  string msg = 1;
+message FibonacciResponse {
+  uint64 result = 1;
+  int64 taken_ms = 2;
 }
 
 message TimeoutRequest {
@@ -46,25 +43,31 @@ message TimeoutResponse {
 }
 
 message SlowRequest {
-  uint32 seconds = 1;
+  uint32 n_ms = 1;
 }
 
 message SlowResponse {
   string msg = 1;
 }
 
-message CodeRequest {
-
-}
-
-message CodeResponse {
-
-}
-
 message FatalRequest {
-
+  string from = 1;
 }
 
 message FatalResponse {
+  string msg = 1;
+}
 
+message Error {
+  uint64 code = 1;
+  string message = 2;
+}
+
+message DetailErrorRequest {
+  uint64 code = 1;
+  string from = 2;
+}
+
+message DetailErrorResponse {
+  string msg = 1;
 }

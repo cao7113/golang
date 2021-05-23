@@ -11,8 +11,8 @@ type HelloServer struct {
 	pb.UnimplementedHelloServiceServer
 }
 
-func (h HelloServer) Hello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
-	logrus.Infof("handling hello-request with %+v", req)
+func (s HelloServer) Hello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
+	logrus.Infof("[server] handling hello-request with %+v", req)
 	resp := &pb.HelloResponse{
 		Message: fmt.Sprintf("Welcome %s", req.From),
 	}

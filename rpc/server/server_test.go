@@ -3,10 +3,10 @@ package server
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"testing"
-	"time"
 )
 
 func (s *ServerTestSuite) TestStatusCode() {
@@ -26,12 +26,12 @@ func TestServerTestSuite(t *testing.T) {
 
 type ServerTestSuite struct {
 	suite.Suite
+	clientConn *grpc.ClientConn
 }
 
 // The SetupSuite method will be run before any tests are run.
 func (s *ServerTestSuite) SetupSuite() {
-	go StartRPCServer()
-	time.Sleep(1 * time.Second)
+	s.clientConn = clientConnWithLocalServer()
 }
 
 // The TearDownSuite method will be run after all tests have been run.

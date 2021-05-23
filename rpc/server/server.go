@@ -2,13 +2,15 @@ package server
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"github.com/cao7113/hellogolang/proto/gosdk/proto/ping/v1"
 	"github.com/cao7113/hellogolang/proto/gosdk/proto/stream/v1"
 	tryv1 "github.com/cao7113/hellogolang/proto/gosdk/proto/try/v1"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc/reflection"
+	"strconv"
+	"strings"
+
 	//grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/cao7113/hellogolang/proto/gosdk/proto/hello/v1"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
@@ -20,15 +22,11 @@ import (
 	"net"
 )
 
-var ConnAddress = flag.String("ConnAddress", ":50051", "rpc address")
-
-func StartRPCServer() {
-	flag.Parse()
-
-	address := *ConnAddress
+func StartRPCServer(port int, host string) {
+	address := strings.Join([]string{host, strconv.Itoa(port)}, ":")
 	lis, err := net.Listen("tcp", address)
 	if err != nil {
-		logrus.Fatalf("failed to listen addr %s with error: %v", address, err)
+		logrus.Fatalf("failed to listen address: %s with error: %v", address, err)
 	}
 	defer lis.Close()
 
@@ -44,7 +42,7 @@ func StartRPCServer() {
 	reflection.Register(s)
 
 	// todo graceful shutdown!!! todo
-	logrus.Infof("running grpc server at %s", address)
+	logrus.Infof("[gRPC] running server at %s", address)
 	if err := s.Serve(lis); err != nil {
 		logrus.Fatalf("Serve() failed: %v", err)
 	}

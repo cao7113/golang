@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"github.com/cao7113/hellogolang/rpc/server"
 )
 
@@ -12,5 +13,8 @@ func main() {
 	//)
 	//defer tracer.Stop()
 
-	server.StartRPCServer()
+	pPort := flag.Int("port", 50051, "-port=50051")
+	flag.Parse()
+	port := *pPort
+	server.StartRPCServer(port, "")
 }

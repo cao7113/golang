@@ -5,30 +5,20 @@ import (
 	"errors"
 	streamv1 "github.com/cao7113/hellogolang/proto/gosdk/proto/stream/v1"
 	"github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/suite"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 	"io"
-	"testing"
 	"time"
 )
 
-func (s *StreamTestSuite) TestHiStream() {
+func (s *ServerTestSuite) TestHiStream() {
+	cli := streamv1.NewStreamServiceClient(s.clientConn)
 	ctx := context.Background()
-	conn, err := grpc.DialContext(ctx, *ConnAddress, grpc.WithInsecure())
-	if err != nil {
-		logrus.Fatalf("connect server %v", err)
-	}
-	defer conn.Close()
-
-	c := streamv1.NewStreamServiceClient(conn)
 	req := &streamv1.HiRequest{
 		From:     "testing",
-		MsgCount: 10,
+		MsgCount: 5,
 	}
 	logrus.Infof("[client] requesting with %+v", req)
-
-	rs, err := c.Hi(ctx, req)
+	rs, err := cli.Hi(ctx, req)
 	if err != nil {
 		if st, ok := status.FromError(err); ok {
 			logrus.Fatalf("error: code: %d message: %s", st.Code(), st.Message())
@@ -43,14 +33,14 @@ func (s *StreamTestSuite) TestHiStream() {
 			hr, err := rs.Recv()
 			if err != nil {
 				if errors.Is(err, io.EOF) {
-					logrus.Infof("got %d messages, then server stream end", cnt)
+					logrus.Infof("[client] got %d messages and stream end", cnt)
 				} else {
 					logrus.Errorf("Recv() unexpected error: %v", err)
 				}
 				break
 			}
 			if hr != nil {
-				logrus.Infof("hi idx=%d response: %+v", hr.Index, hr)
+				logrus.Infof("[client] got idx=%d response: %+v", hr.Index, hr)
 			}
 			cnt++
 			//time.Sleep(10 * time.Millisecond)
@@ -59,16 +49,10 @@ func (s *StreamTestSuite) TestHiStream() {
 	}
 }
 
-func (s *StreamTestSuite) TestClientStream() {
+func (s *ServerTestSuite) TestClientStream() {
 	ctx := context.Background()
-	conn, err := grpc.DialContext(ctx, *ConnAddress, grpc.WithInsecure())
-	if err != nil {
-		logrus.Fatalf("connect server %v", err)
-	}
-	defer conn.Close()
-
-	c := streamv1.NewStreamServiceClient(conn)
-	cs, err := c.ClientStream(ctx)
+	cli := streamv1.NewStreamServiceClient(s.clientConn)
+	cs, err := cli.ClientStream(ctx)
 	if err != nil {
 		logrus.Fatalf("ClientStream fatal: %s", err.Error())
 	}
@@ -87,23 +71,17 @@ func (s *StreamTestSuite) TestClientStream() {
 	time.Sleep(2 * time.Second)
 }
 
-func (s *StreamTestSuite) TestBiStream() {
+func (s *ServerTestSuite) TestBiStream() {
 	ctx := context.Background()
-	conn, err := grpc.DialContext(ctx, *ConnAddress, grpc.WithInsecure())
-	if err != nil {
-		logrus.Fatalf("connect server %v", err)
-	}
-	defer conn.Close()
-
-	c := streamv1.NewStreamServiceClient(conn)
-	bs, err := c.BiStream(ctx)
+	cli := streamv1.NewStreamServiceClient(s.clientConn)
+	bs, err := cli.BiStream(ctx)
 	if err != nil {
 		logrus.Fatalf("ClientStream fatal: %s", err.Error())
 	}
 
 	// push messages
 	go func() {
-		cnt := 7
+		cnt := 5
 		for i := 0; i < cnt; i++ {
 			req := &streamv1.BiStreamRequest{
 				From:  "testing",
@@ -134,22 +112,4 @@ func (s *StreamTestSuite) TestBiStream() {
 
 	time.Sleep(3 * time.Second)
 	//select {}
-}
-
-func TestStreamTestSuite(t *testing.T) {
-	suite.Run(t, new(StreamTestSuite))
-}
-
-type StreamTestSuite struct {
-	suite.Suite
-}
-
-// The SetupSuite method will be run before any tests are run.
-func (s *StreamTestSuite) SetupSuite() {
-	go StartRPCServer()
-	//time.Sleep(1 * time.Second)
-}
-
-// The TearDownSuite method will be run after all tests have been run.
-func (s *StreamTestSuite) TearDownSuite() {
 }

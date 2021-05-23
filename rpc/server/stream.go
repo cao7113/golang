@@ -89,7 +89,7 @@ func (s StreamServer) BiStream2(svr streamv1.StreamService_BiStreamServer) error
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
 
-	// client stream, pull messages
+	// pull messages
 	go func() {
 		cnt := 0
 		for {
