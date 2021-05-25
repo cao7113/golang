@@ -44,6 +44,8 @@ message TimeoutResponse {
 
 message SlowRequest {
   uint32 n_ms = 1;
+  string guid = 2;
+  string from = 3;
 }
 
 message SlowResponse {

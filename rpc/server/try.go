@@ -41,10 +41,10 @@ func (s TryServer) Fibonacci(ctx context.Context, req *tryv1.FibonacciRequest) (
 }
 
 func (s TryServer) Slow(ctx context.Context, req *tryv1.SlowRequest) (*tryv1.SlowResponse, error) {
-	logrus.Infof("[server] handle requesting with %+v", req)
+	logrus.Infof("[server] handle requesting guid=%s with %+v", req.Guid, req)
 	time.Sleep(time.Duration(req.NMs) * time.Millisecond)
 	resp := &tryv1.SlowResponse{
-		Msg: fmt.Sprintf("[server] reply after %d ms", req.NMs),
+		Msg: fmt.Sprintf("reply guid=%s, after %d ms", req.Guid, req.NMs),
 	}
 	return resp, nil
 }

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	tryv1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/try/v1"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
@@ -59,12 +60,37 @@ func (s *TryTestSuite) TestFibonacci() {
 func (s *TryTestSuite) TestSlow() {
 	cli := tryv1.NewTryServiceClient(clientConnWithLocalServer())
 	req := &tryv1.SlowRequest{
+		Guid: time.Now().Format(time.RFC3339Nano),
 		NMs: 1_000,
 	}
 	resp, err := cli.Slow(s.ctx, req)
 	s.Nil(err)
 	checkRPCErr(err)
-	logrus.Infof("[client] got response: %s", resp)
+	logrus.Infof("[client] got %s", resp)
+}
+
+func (s *TryTestSuite) TestGracefulStop(){
+	cli := tryv1.NewTryServiceClient(clientConnWithRemoteSvr())
+	if true {
+		cli = tryv1.NewTryServiceClient(clientConnWithLocalServer())
+	}
+	cnt := 0
+	for {
+		req := &tryv1.SlowRequest{
+			Guid: fmt.Sprintf("%d--%s", cnt, time.Now().Format(time.RFC3339Nano)),
+			NMs: 2_000,
+		}
+		resp, err := cli.Slow(s.ctx, req)
+		s.Nil(err)
+		checkRPCErr(err)
+		logrus.Infof("[client] got %s", resp)
+		if err != nil {
+			break
+		}
+		//time.Sleep(100 * time.Millisecond)
+		cnt ++
+	}
+	logrus.Info("graceful-stop over")
 }
 
 func (s *TryTestSuite) TestTimeout() {
