@@ -1,11 +1,12 @@
-package try
+package channel
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/suite"
 	"testing"
 )
 
-func TestSelect(t *testing.T) {
+func (s *SelectSuite) TestSelect() {
 	var c1, c2, c3 chan int
 	var i1, i2 int
 	select {
@@ -13,7 +14,7 @@ func TestSelect(t *testing.T) {
 		fmt.Println("received ", i1, " from c1")
 	case c2 <- i2:
 		fmt.Println("sent ", i2, " to c2")
-	case i3, ok := (<-c3): // same as: i3, ok := <-c3
+	case i3, ok := <-c3:
 		if ok {
 			fmt.Println("received ", i3, " from c3")
 		} else {
@@ -22,4 +23,12 @@ func TestSelect(t *testing.T) {
 	default:
 		fmt.Println("no communication")
 	}
+}
+
+func TestSelectSuite(t *testing.T) {
+	suite.Run(t, &SelectSuite{})
+}
+
+type SelectSuite struct {
+	suite.Suite
 }

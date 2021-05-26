@@ -18,9 +18,15 @@ import (
 )
 
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
+	pCtx := context.Background()
+	ctx, cancel := context.WithCancel(pCtx)
 	defer cancel()
-	conn, err := grpc.DialContext(ctx, "localhost:8080", grpc.WithBlock(), grpc.WithTimeout(3*time.Second), grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx,
+		"localhost:8080",
+		grpc.WithBlock(),
+		grpc.WithTimeout(3*time.Second),
+		grpc.WithInsecure(),
+	)
 	if err != nil {
 		logrus.Fatalf("could not connect to server: %v", err)
 	}
