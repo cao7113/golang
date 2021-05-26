@@ -75,8 +75,9 @@ tasks:
     cmds:
       - buf beta mod init
       - cat buf.yaml
-  buf-g:
+  bufg:
     cmds:
+      - buf lint
       - buf generate
 
   # buf commands

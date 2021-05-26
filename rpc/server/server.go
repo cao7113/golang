@@ -17,11 +17,18 @@ import (
 	"google.golang.org/grpc/status"
 	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc"
 	"net"
+	"os"
+	"os/signal"
 	"strconv"
 	"strings"
+	"sync"
+	"syscall"
 )
 
 func StartRPCServer(port int, host string) {
+	_, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	address := strings.Join([]string{host, strconv.Itoa(port)}, ":")
 	lis, err := net.Listen("tcp", address)
 	if err != nil {
@@ -41,11 +48,25 @@ func StartRPCServer(port int, host string) {
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
 
-	// todo graceful shutdown!!! todo
+	// graceful-stop https://gist.github.com/embano1/e0bf49d24f1cdd07cffad93097c04f0a
+	wg := sync.WaitGroup{}
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
+	wg.Add(1)
+	go func() {
+		sig := <-sigCh
+		logrus.Infof("got signal %v, attempting graceful shutdown", sig)
+		cancel()
+		s.GracefulStop()
+		wg.Done()
+	}()
+
 	logrus.Infof("[gRPC] running server at %s", address)
 	if err := s.Serve(lis); err != nil {
 		logrus.Fatalf("Serve() failed: %v", err)
 	}
+	wg.Wait()
+	logrus.Infof("[gRPC] clean shutdown")
 }
 
 func setupMiddlewares(opts []grpc.ServerOption) []grpc.ServerOption {

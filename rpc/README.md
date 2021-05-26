@@ -21,7 +21,7 @@ git reset --hard "${GOOGLEAPIS_COMMIT}"
 ```
 
 ## Todo
-
-* auth 
+ 
 * graceful down
 * middleware
+* auth
