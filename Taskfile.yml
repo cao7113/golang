@@ -16,9 +16,9 @@ includes:
 
 tasks:
   rpc:
-    desc: start hello grpc server
+    desc: start grpc server
     cmds:
-      - go run -v rpc/cmd/main.go
+      - go run -v rpc/main.go
   dk-rpc:
     desc: run docker rpc
     cmds:

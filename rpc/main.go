@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/cao7113/hellogolang/rpc/server"
+	"github.com/cao7113/hellogolang/rpc/service"
 )
 
 func main() {
@@ -16,5 +16,5 @@ func main() {
 	pPort := flag.Int("port", 50051, "-port=50051")
 	flag.Parse()
 	port := *pPort
-	server.StartRPCServer(port, "")
+	service.StartRPCServer(port, "")
 }

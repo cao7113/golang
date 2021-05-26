@@ -1,4 +1,4 @@
-package server
+package service
 
 import (
 	healthv1 "github.com/cao7113/hellogolang/proto/gosdk/grpc/health/v1"

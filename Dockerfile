@@ -9,7 +9,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -v \
     -installsuffix 'static' \
     -o /app/bin/rpc \
-    rpc/cmd/main.go
+    rpc/main.go
 
 FROM alpine:3.12 AS final
 WORKDIR /app
