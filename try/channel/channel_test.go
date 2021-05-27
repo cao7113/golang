@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func (s *ChannelSuite) TestChanBasic() {
+func (s *ChannelSuite) TestChan() {
 	s.Run("declare and select", func() {
 		var ch chan int
 		s.Nil(ch)
@@ -38,70 +38,70 @@ func (s *ChannelSuite) TestChanBasic() {
 		s.Equal(0, i)
 
 		for k := range ch {
-			log.Fatalf("will not run here k = %d ", k)
+			log.Fatalf("never run here k = %d ", k)
 		}
 
 		log.Println("end")
 	})
 
-	s.Run("close and select", func() {
-		ch := make(chan int)
-		close(ch)
-		ch2 := make(chan int)
-		close(ch2)
-		i := 0
-		for {
-			select {
-			case <-ch:
-				log.Println("read from closed channel", i) // always run this
-			case <-ch2:
-				log.Println("read from closed channel2", i) // always run this
-			default:
-				log.Println("default in closed channel select", i)
-			}
-			i++
-		}
-	})
+	//s.Run("close and select", func() {
+	//	ch := make(chan int)
+	//	close(ch)
+	//	ch2 := make(chan int)
+	//	close(ch2)
+	//	i := 0
+	//	for {
+	//		select {
+	//		case <-ch:
+	//			log.Println("read from closed channel", i) // rand run this
+	//		case <-ch2:
+	//			log.Println("read from closed channel2", i) // rand run this
+	//		default:
+	//			log.Println("default in closed channel select", i) // never run here
+	//		}
+	//		i++
+	//	}
+	//})
 
 	s.Run("make and read", func() {
 		ch := make(chan int)
+		defer close(ch)
+
 		var i int
 		select {
-		case i = <-ch: // will block when no data to read
+		case i = <-ch:
 			log.Println("read i=", i)
 		default:
 			i = 999
 		}
 		s.Equal(999, i)
-		close(ch)
 	})
 
 	s.Run("write and read", func() {
 		ch := make(chan int)
-		go func() {
+		go func(chan int) {
+			defer close(ch)
 			for i := 0; i < 3; i++ {
 				ch <- i
 			}
-			close(ch)
-		}()
-		for i := range ch {
+		}(ch)
+
+		// for range是阻塞式读取channel，只有channel close之后才会结束
+		for i := range ch { // will block here if not close ch
 			log.Println("i =", i)
 		}
 		log.Println("end")
 	})
 }
 
-func (s *ChannelSuite) TestChan() {
-	ch := make(chan int)
-	go func(chan int) {
-		ch <- 1
-		ch <- 2
-		ch <- 3
-		close(ch)
-	}(ch)
-	for n := range ch {
-		log.Println(n)
-	}
+func (s *ChannelSuite) TestChanBuf() {
+	s.Run("has buf", func() {
+		ch := make(chan int, 1)
+		ch <- 123
+		i := <-ch
+		s.Equal(123, i)
+		//<-ch // will block
+	})
 }
 
 func TestChannelSuite(t *testing.T) {

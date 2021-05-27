@@ -1,4 +1,4 @@
-package nesting
+package nested
 
 import (
 	"encoding/json"
