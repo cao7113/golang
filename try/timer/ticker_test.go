@@ -7,7 +7,20 @@ import (
 	"time"
 )
 
+// Sleep是使用睡眠完成定时任务，需要被调度唤醒。Tick函数是使用channel阻塞当前协程，完成定时任务的执行
+// 建议使用time.Tick完成定时任务。
+
 func (s *TickerSuite) TestTick() {
+	s.Run("just test", func() {
+		d := 1 * time.Second
+		t := time.NewTicker(d)
+		defer t.Stop()
+		for {
+			tm := <-t.C
+			log.Println("tick time: ", tm)
+		}
+	})
+
 	s.Run("Tick", func() {
 		ch := time.After(3 * time.Second)
 		tk := time.Tick(1 * time.Second)
@@ -32,7 +45,7 @@ func (s *TickerSuite) TestTick() {
 
 		go func() {
 			<-time.After(2 * time.Second)
-			tk.Stop()
+			tk.Stop() // stop ticker to release resources
 		}()
 
 		for {
