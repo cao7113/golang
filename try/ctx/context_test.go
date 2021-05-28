@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+// https://blog.golang.org/context
+
 func (s *ContextSuite) TestCancel() {
 	bg := context.Background()
 	ctx, cancel := context.WithCancel(bg)

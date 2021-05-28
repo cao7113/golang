@@ -1,1 +1,1 @@
-https://yourbasic.org/golang/blueprint/
+* https://yourbasic.org/golang/blueprint/
