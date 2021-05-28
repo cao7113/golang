@@ -19,8 +19,7 @@ func (s *ContextSuite) TestCancel() {
 
 	// wait and cancel
 	go func() {
-		time.Sleep(3 * time.Second)
-		log.Println("[watcher] cancel called")
+		log.Println("[watcher] cancel called", <-time.After(3*time.Second))
 		cancel()
 	}()
 
