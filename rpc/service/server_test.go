@@ -28,7 +28,7 @@ func TestServerTestSuite(t *testing.T) {
 type ServerTestSuite struct {
 	suite.Suite
 	clientConn *grpc.ClientConn
-	ctx context.Context
+	ctx        context.Context
 }
 
 // The SetupSuite method will be run before any tests are run.

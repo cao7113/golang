@@ -1,6 +1,6 @@
 package broker
 
 type Asset struct {
-	UUID string
+	UUID   string
 	Symbol string
 }

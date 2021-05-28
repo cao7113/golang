@@ -60,7 +60,7 @@ func (s *TryTestSuite) TestSlow() {
 	cli := tryv1.NewTryServiceClient(clientConnWithLocalServer())
 	req := &tryv1.SlowRequest{
 		Guid: time.Now().Format(time.RFC3339Nano),
-		NMs: 1_000,
+		NMs:  1_000,
 	}
 	resp, err := cli.Slow(s.ctx, req)
 	s.Nil(err)
