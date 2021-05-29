@@ -2,35 +2,32 @@ package nested
 
 import (
 	"encoding/json"
+	"github.com/cao7113/hellogolang/try/nested/otherpkg"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
 
-type Duck string
-
-func (d Duck) Hi() string {
-	return "Gua"
-}
-
 func (s *NestingSuite) TestNestInterface() {
-	type Itf interface {
-		Hi() string
+	a := &Chinese{
+		Greeter: ZhGreeter(""),
+		City:    "Beijing",
 	}
-
-	type A struct {
-		Itf
-		Age int
-	}
-
-	a := &A{
-		Itf: Duck(""),
-	}
-	s.EqualValues("", a.Itf)
-	s.EqualValues("Gua", a.Hi()) // Method up from Itf
-	s.EqualValues("Gua", a.Itf.Hi())
+	s.EqualValues("", a.Greeter)
+	s.EqualValues("你好", a.Hi()) // Method up from Greeter
+	s.EqualValues("你好", a.Greeter.Hi())
 }
 
-func (s *NestingSuite) TestNestingJson() {
+func (s *NestingSuite) TestNestMethods() {
+	f := &FruitStore{
+		&otherpkg.Apple{Color: "green"},
+		"AppleStore",
+	}
+	f.SetColor("red")             // call nesting-obj method
+	s.EqualValues("red", f.Color) // read nesting-obj attribute
+	s.EqualValues("AppleStore", f.Name)
+}
+
+func (s *NestingSuite) TestNestJson() {
 	blog := &Blog{
 		User: User{
 			Name:  "a",
@@ -71,20 +68,6 @@ func (s *NestingSuite) TestOmitJson() {
 	s.Nil(err)
 	js = `{"name":"","title":"test"}` // no email part
 	s.Equal(js, string(bs))
-}
-
-type User struct {
-	Name  string `json:"name"`
-	Email string `json:"email,omitempty"`
-}
-
-func (s User) Score() int {
-	return 5
-}
-
-type Blog struct {
-	User
-	Title string `json:"title"`
 }
 
 func TestNestingSuite(t *testing.T) {
